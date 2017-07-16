@@ -226,7 +226,6 @@ public class EditorActivity extends AppCompatActivity implements
         // and pet attributes from the editor are the values.
         ContentValues values = new ContentValues();
         values.put(ClothesEntry.COLUMN_CLOTHES_NAME, nameString);
-        values.put(ClothesEntry.COLUMN_CLOTHES_PRICE, priceString);
         values.put(ClothesEntry.COLUMN_CLOTHES_TYPE, mType);
         values.put(ClothesEntry.COLUMN_CLOTHES_SUPPLIER, mSupplier);
         // If the weight is not provided by the user, don't try to parse the string into an
@@ -241,7 +240,7 @@ public class EditorActivity extends AppCompatActivity implements
         if (!TextUtils.isEmpty(quantityString)) {
             quantity = Integer.parseInt(quantityString);
         }
-        values.put(ClothesEntry.COLUMN_CLOTHES_PRICE, quantity);
+        values.put(ClothesEntry.COLUMN_CLOTHES_QUANTITY, quantity);
 
 
         // Determine if this is a new or existing pet by checking if mCurrentClothesUri is null or not

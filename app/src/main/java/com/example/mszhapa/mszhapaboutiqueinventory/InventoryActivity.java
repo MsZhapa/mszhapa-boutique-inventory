@@ -144,7 +144,10 @@ public class InventoryActivity extends AppCompatActivity implements
         String[] projection = {
                 ClothesEntry._ID,
                 ClothesEntry.COLUMN_CLOTHES_NAME,
-                ClothesEntry.COLUMN_CLOTHES_TYPE };
+                ClothesEntry.COLUMN_CLOTHES_TYPE,
+                ClothesEntry.COLUMN_CLOTHES_SUPPLIER,
+                ClothesEntry.COLUMN_CLOTHES_PRICE,
+                ClothesEntry.COLUMN_CLOTHES_QUANTITY };
 
         // This loader will execute the ContentProvider's query method on a background thread
         return new CursorLoader(this,   // Parent activity context

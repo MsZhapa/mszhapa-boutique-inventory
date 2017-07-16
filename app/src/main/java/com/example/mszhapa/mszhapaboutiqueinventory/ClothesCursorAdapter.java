@@ -2,7 +2,6 @@ package com.example.mszhapa.mszhapaboutiqueinventory;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -55,25 +54,33 @@ public class ClothesCursorAdapter extends CursorAdapter {
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
         // Find individual views that we want to modify in the list item layout
-        TextView nameTextView = (TextView) view.findViewById(R.id.name);
-        TextView summaryTextView = (TextView) view.findViewById(R.id.summary);
+        TextView nameTextView = (TextView) view.findViewById(R.id.item_name);
+        TextView typeTextView = (TextView) view.findViewById(R.id.item_type);
+        TextView supplierTextView = (TextView) view.findViewById(R.id.item_supplier);
+        TextView priceTextView = (TextView) view.findViewById(R.id.item_price);
+        TextView quantityTextView = (TextView) view.findViewById(R.id.item_quantity);
 
         // Find the columns of pet attributes that we're interested in
         int nameColumnIndex = cursor.getColumnIndex(ClothesEntry.COLUMN_CLOTHES_NAME);
         int typeColumnIndex = cursor.getColumnIndex(ClothesEntry.COLUMN_CLOTHES_TYPE);
+        int supplierColumnIndex = cursor.getColumnIndex(ClothesEntry.COLUMN_CLOTHES_SUPPLIER);
+        int priceColumnIndex = cursor.getColumnIndex(ClothesEntry.COLUMN_CLOTHES_PRICE);
+        int quantityColumnIndex = cursor.getColumnIndex(ClothesEntry.COLUMN_CLOTHES_QUANTITY);
+
 
         // Read the pet attributes from the Cursor for the current pet
         String clothesName = cursor.getString(nameColumnIndex);
-        String clothesType = cursor.getString(typeColumnIndex);
+        int type = cursor.getInt(typeColumnIndex);
+        int supplier = cursor.getInt(supplierColumnIndex);
+        int price = cursor.getInt(priceColumnIndex);
+        int quantity = cursor.getInt(quantityColumnIndex);
 
-        // If the pet breed is empty string or null, then use some default text
-        // that says "Unknown breed", so the TextView isn't blank.
-        if (TextUtils.isEmpty(clothesType)) {
-            clothesType = context.getString(R.string.unknown_type);
-        }
 
         // Update the TextViews with the attributes for the current pet
         nameTextView.setText(clothesName);
-        summaryTextView.setText(clothesType);
+        typeTextView.setText(Integer.toString(type));
+        supplierTextView.setText(Integer.toString(supplier));
+        priceTextView.setText(Integer.toString(price));
+        quantityTextView.setText(Integer.toString(quantity));
     }
 }
