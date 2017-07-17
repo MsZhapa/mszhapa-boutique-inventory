@@ -79,6 +79,8 @@
 
     <string name="category_quantity">Quantity</string>
 
+    <string name="imposibru">imposibru</string>
+
     <!-- Label for measurement information in the editor [CHAR LIMIT=30] -->
     <string name="category_measurement">Measurement</string>
 

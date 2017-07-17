@@ -2,12 +2,15 @@ package com.example.mszhapa.mszhapaboutiqueinventory;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CursorAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.example.mszhapa.mszhapaboutiqueinventory.data.ClothesContract.ClothesEntry;
 
 /**
@@ -55,32 +58,34 @@ public class ClothesCursorAdapter extends CursorAdapter {
     public void bindView(View view, Context context, Cursor cursor) {
         // Find individual views that we want to modify in the list item layout
         TextView nameTextView = (TextView) view.findViewById(R.id.item_name);
-        TextView typeTextView = (TextView) view.findViewById(R.id.item_type);
-        TextView supplierTextView = (TextView) view.findViewById(R.id.item_supplier);
         TextView priceTextView = (TextView) view.findViewById(R.id.item_price);
         TextView quantityTextView = (TextView) view.findViewById(R.id.item_quantity);
+        ImageView imageView = (ImageView) view.findViewById(R.id.item_image);
 
         // Find the columns of pet attributes that we're interested in
         int nameColumnIndex = cursor.getColumnIndex(ClothesEntry.COLUMN_CLOTHES_NAME);
-        int typeColumnIndex = cursor.getColumnIndex(ClothesEntry.COLUMN_CLOTHES_TYPE);
-        int supplierColumnIndex = cursor.getColumnIndex(ClothesEntry.COLUMN_CLOTHES_SUPPLIER);
         int priceColumnIndex = cursor.getColumnIndex(ClothesEntry.COLUMN_CLOTHES_PRICE);
         int quantityColumnIndex = cursor.getColumnIndex(ClothesEntry.COLUMN_CLOTHES_QUANTITY);
+        int imageColumnIndex = cursor.getColumnIndex(ClothesEntry.COLUMN_CLOTHES_IMAGE);
 
 
         // Read the pet attributes from the Cursor for the current pet
         String clothesName = cursor.getString(nameColumnIndex);
-        int type = cursor.getInt(typeColumnIndex);
-        int supplier = cursor.getInt(supplierColumnIndex);
         int price = cursor.getInt(priceColumnIndex);
         int quantity = cursor.getInt(quantityColumnIndex);
+        Uri imageUri = Uri.parse(cursor.getString(imageColumnIndex));
 
 
         // Update the TextViews with the attributes for the current pet
         nameTextView.setText(clothesName);
-        typeTextView.setText(Integer.toString(type));
-        supplierTextView.setText(Integer.toString(supplier));
         priceTextView.setText(Integer.toString(price));
         quantityTextView.setText(Integer.toString(quantity));
+        Glide.with(context).load(imageUri)
+                .placeholder(R.mipmap.ic_launcher)
+                .error(R.drawable.add)
+                .crossFade()
+                .centerCrop()
+                .into(imageView);
+
     }
 }

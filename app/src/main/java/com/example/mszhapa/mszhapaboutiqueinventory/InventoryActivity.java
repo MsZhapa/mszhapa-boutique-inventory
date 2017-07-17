@@ -95,9 +95,10 @@ public class InventoryActivity extends AppCompatActivity implements
         ContentValues values = new ContentValues();
         values.put(ClothesEntry.COLUMN_CLOTHES_NAME, "H&M garment");
         values.put(ClothesEntry.COLUMN_CLOTHES_TYPE, ClothesEntry.TYPE_PANTS);
-        values.put(ClothesEntry.COLUMN_CLOTHES_SUPPLIER, ClothesEntry.SUPPLIER_ONLY);
         values.put(ClothesEntry.COLUMN_CLOTHES_PRICE, 7);
         values.put(ClothesEntry.COLUMN_CLOTHES_QUANTITY, 8);
+        values.put(ClothesEntry.COLUMN_CLOTHES_SUPPLIER_NAME, "Someone");
+        values.put(ClothesEntry.COLUMN_CLOTHES_SUPPLIER_EMAIL, "Someone@SOMEWHERE.com");
 
         // Insert a new row for Toto into the provider using the ContentResolver.
         // Use the {@link PetEntry#CONTENT_URI} to indicate that we want to insert
@@ -144,10 +145,9 @@ public class InventoryActivity extends AppCompatActivity implements
         String[] projection = {
                 ClothesEntry._ID,
                 ClothesEntry.COLUMN_CLOTHES_NAME,
-                ClothesEntry.COLUMN_CLOTHES_TYPE,
-                ClothesEntry.COLUMN_CLOTHES_SUPPLIER,
                 ClothesEntry.COLUMN_CLOTHES_PRICE,
-                ClothesEntry.COLUMN_CLOTHES_QUANTITY };
+                ClothesEntry.COLUMN_CLOTHES_QUANTITY,
+                ClothesEntry.COLUMN_CLOTHES_IMAGE };
 
         // This loader will execute the ContentProvider's query method on a background thread
         return new CursorLoader(this,   // Parent activity context

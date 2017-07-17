@@ -67,39 +67,20 @@ public static final class ClothesEntry implements BaseColumns {
      */
     public final static String _ID = BaseColumns._ID;
 
-    /**
-     * Name of the pet.
-     *
-     * Type: TEXT
-     */
+
     public final static String COLUMN_CLOTHES_NAME ="name";
 
-    /**
-     * Breed of the pet.
-     *
-     * Type: TEXT
-     */
     public final static String COLUMN_CLOTHES_TYPE = "type";
 
-    /**
-     * Gender of the pet.
-     *
-     * The only possible values are {@link #SUPPLIER_ZARA}, {@link #SUPPLIER_MONKI},
-     * or {@link #SUPPLIER_ONLY}.
-     *
-     * Type: INTEGER
-     */
-    public final static String COLUMN_CLOTHES_SUPPLIER= "supplier";
-
-    /**
-     * Weight of the pet.
-     *
-     * Type: INTEGER
-     */
     public final static String COLUMN_CLOTHES_PRICE = "price";
 
     public final static String COLUMN_CLOTHES_QUANTITY = "quantity";
 
+    public final static String COLUMN_CLOTHES_SUPPLIER_NAME= "supplier_name";
+
+    public final static String COLUMN_CLOTHES_SUPPLIER_EMAIL="supplier_email";
+
+    public final static String COLUMN_CLOTHES_IMAGE="image";
 
     /**
      * Possible values for the gender of the pet.
@@ -109,20 +90,7 @@ public static final class ClothesEntry implements BaseColumns {
     public static final int TYPE_TOP = 2;
 
 
-    public static final int SUPPLIER_ONLY = 0;
-    public static final int SUPPLIER_ZARA = 1;
-    public static final int SUPPLIER_MONKI = 2;
 
-    /**
-     * Returns whether or not the given gender is {@link #SUPPLIER_ONLY}, {@link #SUPPLIER_ZARA},
-     * or {@link #SUPPLIER_MONKI}.
-     */
-    public static boolean isValidSupplier(int supplier) {
-        if (supplier == SUPPLIER_ONLY || supplier == SUPPLIER_ZARA || supplier == SUPPLIER_MONKI) {
-            return true;
-        }
-        return false;
-    }
     public static boolean isValidType(int type) {
         if (type == TYPE_OTHER || type == TYPE_PANTS || type == TYPE_TOP) {
             return true;

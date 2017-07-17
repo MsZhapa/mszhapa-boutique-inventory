@@ -20,6 +20,19 @@
     android:padding="10dp"
     tools:context=".EditorActivity">
 
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:id="@+id/item_image"
+        android:src="@drawable/hanger"/>
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/image_selector"
+        android:src="@drawable/add"/>
+
     <!-- Overview category -->
     <LinearLayout
         android:layout_width="match_parent"
@@ -90,20 +103,32 @@
             style="@style/CategoryStyle" />
 
         <!-- Input field -->
-        <LinearLayout
-            android:layout_height="wrap_content"
-            android:layout_width="0dp"
-            android:layout_weight="2"
-            android:orientation="vertical">
+        <EditText
+            android:id="@+id/edit_supplier_name"
+            android:hint="@string/hint_pet_weight"
+            android:inputType="text"
+            style="@style/EditorFieldStyle" />
 
-            <!-- Gender drop-down spinner -->
-            <Spinner
-                android:id="@+id/spinner_supplier"
-                android:layout_height="48dp"
-                android:layout_width="wrap_content"
-                android:paddingRight="16dp"
-                android:spinnerMode="dropdown"/>
-        </LinearLayout>
+    </LinearLayout>
+    <!-- Supplier category -->
+    <LinearLayout
+        android:id="@+id/container_supplier_email"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <!-- Label -->
+        <TextView
+            android:text="@string/category_supplier"
+            style="@style/CategoryStyle" />
+
+        <!-- Input field -->
+        <EditText
+            android:id="@+id/edit_supplier_email"
+            android:hint="@string/hint_pet_weight"
+            android:inputType="text"
+            style="@style/EditorFieldStyle" />
+
     </LinearLayout>
 
     <!-- Price category -->

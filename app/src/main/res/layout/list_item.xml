@@ -7,6 +7,7 @@
 
     <ImageView
         android:layout_width="0dp"
+        android:id="@id/item_image"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:layout_weight="1"
@@ -27,22 +28,11 @@
             android:textAppearance="?android:textAppearanceMedium"
             android:textColor="#2B3D4D" />
 
-        <TextView
-            android:id="@+id/item_type"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:layout_toEndOf="@id/item_name"
-            android:layout_toRightOf="@id/item_name"
-            android:fontFamily="sans-serif-medium"
-            android:textAppearance="?android:textAppearanceMedium"
-            android:textColor="#2B3D4D" />
-
         <ImageView
             android:id="@+id/price_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/item_type"
+            android:layout_below="@id/item_name"
             android:layout_margin="5dp"
             android:src="@drawable/price" />
 
@@ -50,7 +40,7 @@
             android:id="@+id/item_price"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/item_type"
+            android:layout_below="@id/item_name"
             android:layout_margin="5dp"
             android:layout_toEndOf="@id/price_icon"
             android:layout_toRightOf="@id/price_icon"
@@ -77,24 +67,10 @@
             android:textAppearance="?android:textAppearanceMedium"
             android:textColor="#2B3D4D" />
 
-        <ImageView
-            android:id="@+id/supplier_icon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/quantity_icon"
-            android:layout_margin="5dp"
-            android:src="@drawable/supplier" />
-
-        <TextView
-            android:id="@+id/item_supplier"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/item_quantity"
-            android:layout_toEndOf="@id/supplier_icon"
-            android:layout_toRightOf="@id/supplier_icon"
-            android:fontFamily="sans-serif-medium"
-            android:textAppearance="?android:textAppearanceMedium"
-            android:textColor="#2B3D4D" />
-
     </RelativeLayout>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="sell"
+        android:layout_gravity="center"/>
 </LinearLayout>

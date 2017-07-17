@@ -1,5 +1,6 @@
 package com.example.mszhapa.mszhapaboutiqueinventory;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.app.LoaderManager;
 import android.content.ContentValues;
@@ -7,12 +8,17 @@ import android.content.CursorLoader;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.support.annotation.NonNull;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -20,11 +26,16 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.example.mszhapa.mszhapaboutiqueinventory.data.ClothesContract;
 import com.example.mszhapa.mszhapaboutiqueinventory.data.ClothesContract.ClothesEntry;
+
+import java.io.File;
 
 
 /**
@@ -37,6 +48,8 @@ public class EditorActivity extends AppCompatActivity implements
     /** Identifier for the pet data loader */
     private static final int EXISTING_CLOTHES_LOADER = 0;
 
+    private static final String TAG = EditorActivity.class.getSimpleName();;
+
     /** Content URI for the existing pet (null if it's a new pet) */
     private Uri mCurrentClothesUri;
 
@@ -46,24 +59,26 @@ public class EditorActivity extends AppCompatActivity implements
     /** EditText field to enter the pet's breed */
     private Spinner mTypeSpinner;
 
-    /** EditText field to enter the pet's gender */
-    private Spinner mSupplierSpinner;
-
     /** EditText field to enter the pet's name */
     private EditText mPriceEditText;
 
     /** EditText field to enter the pet's name */
     private EditText mQuantityEditText;
 
+    private ImageButton mImageBtn;
 
+    private String mCurrentPhotoUri = "no images";
 
-    /**
-     * Gender of the pet. The possible valid values are in the PetContract.java file:
-     *
-     */
+    private ImageView mItemImage;
+
+    public static final int PICK_PHOTO_REQUEST = 20;
+    public static final int EXTERNAL_STORAGE_REQUEST_PERMISSION_CODE = 21;
+
     private int mType = ClothesEntry.TYPE_OTHER;
 
-    private int mSupplier = ClothesEntry.SUPPLIER_ONLY;
+    private EditText mSupplierNameEditText;
+
+    private EditText mSupplierEmailEditText;
 
     /** Boolean flag that keeps track of whether the pet has been edited (true) or not (false) */
     private boolean mClothesHasChanged = false;
@@ -111,21 +126,77 @@ public class EditorActivity extends AppCompatActivity implements
         // Find all relevant views that we will need to read user input from
         mNameEditText = (EditText) findViewById(R.id.edit_clothes_name);
         mTypeSpinner = (Spinner) findViewById(R.id.spinner_type);
-        mSupplierSpinner = (Spinner) findViewById(R.id.spinner_supplier);
+        mSupplierNameEditText = (EditText) findViewById(R.id.edit_supplier_name);
+        mSupplierEmailEditText = (EditText) findViewById(R.id.edit_supplier_email);
         mPriceEditText = (EditText) findViewById(R.id.edit_clothes_price);
         mQuantityEditText = (EditText) findViewById(R.id.edit_clothes_quantity);
+        mImageBtn = (ImageButton) findViewById(R.id.image_selector);
+        mItemImage = (ImageView) findViewById(R.id.item_image);
 
         // Setup OnTouchListeners on all the input fields, so we can determine if the user
         // has touched or modified them. This will let us know if there are unsaved changes
         // or not, if the user tries to leave the editor without saving.
         mNameEditText.setOnTouchListener(mTouchListener);
         mTypeSpinner.setOnTouchListener(mTouchListener);
-        mSupplierSpinner.setOnTouchListener(mTouchListener);
+        mSupplierNameEditText.setOnTouchListener(mTouchListener);
+        mSupplierEmailEditText.setOnTouchListener(mTouchListener);
         mPriceEditText.setOnTouchListener(mTouchListener);
         mQuantityEditText.setOnTouchListener(mTouchListener);
 
+        mImageBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onPhotoProductUpdate(view);
+                mClothesHasChanged = true;
+            }
+        });
+
+
         setupTypeSpinner();
-        setupSupplierSpinner();
+    }
+
+    public void onPhotoProductUpdate(View view) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            //We are on M or above so we need to ask for runtime permissions
+            if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                invokeGetPhoto();
+            } else {
+                // we are here if we do not all ready have permissions
+                String[] permisionRequest = {Manifest.permission.READ_EXTERNAL_STORAGE};
+                requestPermissions(permisionRequest, EXTERNAL_STORAGE_REQUEST_PERMISSION_CODE);
+            }
+        } else {
+            //We are on an older devices so we dont have to ask for runtime permissions
+            invokeGetPhoto();
+        }
+
+    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == EXTERNAL_STORAGE_REQUEST_PERMISSION_CODE && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            //We got a GO from the user
+            invokeGetPhoto();
+        } else {
+            Toast.makeText(this, R.string.imposibru, Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void invokeGetPhoto() {
+        // invoke the image gallery using an implict intent.
+        Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+
+        // where do we want to find the data?
+        File pictureDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+        String pictureDirectoryPath = pictureDirectory.getPath();
+        // finally, get a URI representation
+        Uri data = Uri.parse(pictureDirectoryPath);
+
+        // set the data and type.  Get all image types.
+        photoPickerIntent.setDataAndType(data, "image/*");
+
+        // we will invoke this activity, and get something back from it.
+        startActivityForResult(photoPickerIntent, PICK_PHOTO_REQUEST);
     }
 
     /**
@@ -166,41 +237,6 @@ public class EditorActivity extends AppCompatActivity implements
             }
         });
     }
-    private void setupSupplierSpinner() {
-        // Create adapter for spinner. The list options are from the String array it will use
-        // the spinner will use the default layout
-        ArrayAdapter supplierSpinnerAdapter = ArrayAdapter.createFromResource(this,
-                R.array.array_supplier_options, android.R.layout.simple_spinner_item);
-
-        // Specify dropdown layout style - simple list view with 1 item per line
-        supplierSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
-
-        // Apply the adapter to the spinner
-        mSupplierSpinner.setAdapter(supplierSpinnerAdapter);
-
-        // Set the integer mSelected to the constant values
-        mSupplierSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String selection = (String) parent.getItemAtPosition(position);
-                if (!TextUtils.isEmpty(selection)) {
-                    if (selection.equals(getString(R.string.supplier_zara))) {
-                        mSupplier = ClothesEntry.SUPPLIER_ZARA;
-                    } else if (selection.equals(getString(R.string.supplier_monki))) {
-                        mSupplier = ClothesEntry.SUPPLIER_MONKI;
-                    } else {
-                        mSupplier = ClothesEntry.SUPPLIER_ONLY;
-                    }
-                }
-            }
-
-            // Because AdapterView is an abstract class, onNothingSelected must be defined
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-                mSupplier = ClothesContract.ClothesEntry.TYPE_OTHER;
-            }
-        });
-    }
 
     /**
      * Get user input from editor and save pet into database.
@@ -211,14 +247,19 @@ public class EditorActivity extends AppCompatActivity implements
         String nameString = mNameEditText.getText().toString().trim();
         String priceString = mPriceEditText.getText().toString().trim();
         String quantityString = mQuantityEditText.getText().toString().trim();
+        String supplierNameString = mSupplierNameEditText.getText().toString().trim();
+        String supplierEmailString = mSupplierEmailEditText.getText().toString().trim();
+
 
         // Check if this is supposed to be a new pet
         // and check if all the fields in the editor are blank
         if (mCurrentClothesUri == null &&
                 TextUtils.isEmpty(nameString) && TextUtils.isEmpty(priceString) &&
-                TextUtils.isEmpty(quantityString) && mType == ClothesEntry.TYPE_OTHER && mSupplier == ClothesEntry.SUPPLIER_ONLY) {
+                TextUtils.isEmpty(quantityString) && mType == ClothesEntry.TYPE_OTHER && TextUtils.isEmpty(supplierNameString) && TextUtils.isEmpty(supplierEmailString)) {
             // Since no fields were modified, we can return early without creating a new pet.
             // No need to create ContentValues and no need to do any ContentProvider operations.
+            Toast.makeText(this, R.string.imposibru, Toast.LENGTH_SHORT).show();
+            // No change has been made so we can return
             return;
         }
 
@@ -227,7 +268,11 @@ public class EditorActivity extends AppCompatActivity implements
         ContentValues values = new ContentValues();
         values.put(ClothesEntry.COLUMN_CLOTHES_NAME, nameString);
         values.put(ClothesEntry.COLUMN_CLOTHES_TYPE, mType);
-        values.put(ClothesEntry.COLUMN_CLOTHES_SUPPLIER, mSupplier);
+        values.put(ClothesEntry.COLUMN_CLOTHES_PRICE, priceString);
+        values.put(ClothesEntry.COLUMN_CLOTHES_QUANTITY, quantityString);
+        values.put(ClothesEntry.COLUMN_CLOTHES_SUPPLIER_NAME, supplierNameString);
+        values.put(ClothesEntry.COLUMN_CLOTHES_SUPPLIER_EMAIL, supplierEmailString);
+        values.put(ClothesEntry.COLUMN_CLOTHES_IMAGE, mCurrentPhotoUri);
         // If the weight is not provided by the user, don't try to parse the string into an
         // integer value. Use 0 by default.
         int price = 0;
@@ -371,6 +416,24 @@ public class EditorActivity extends AppCompatActivity implements
         // Show dialog that there are unsaved changes
         showUnsavedChangesDialog(discardButtonClickListener);
     }
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == PICK_PHOTO_REQUEST && resultCode == RESULT_OK) {
+            if (data != null) {
+                //If we are here, everything processed successfully and we have an Uri data
+                Uri mProductPhotoUri = data.getData();
+                mCurrentPhotoUri = mProductPhotoUri.toString();
+                Log.d(TAG, "Selected images " + mProductPhotoUri);
+
+                //We use Glide to import photo images
+                Glide.with(this).load(mProductPhotoUri)
+                        .placeholder(R.drawable.add)
+                        .crossFade()
+                        .fitCenter()
+                        .into(mItemImage);
+            }
+        }
+    }
 
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
@@ -380,9 +443,11 @@ public class EditorActivity extends AppCompatActivity implements
                 ClothesEntry._ID,
                 ClothesEntry.COLUMN_CLOTHES_NAME,
                 ClothesEntry.COLUMN_CLOTHES_TYPE,
-                ClothesEntry.COLUMN_CLOTHES_SUPPLIER,
                 ClothesEntry.COLUMN_CLOTHES_PRICE,
-                ClothesEntry.COLUMN_CLOTHES_QUANTITY };
+                ClothesEntry.COLUMN_CLOTHES_QUANTITY,
+                ClothesEntry.COLUMN_CLOTHES_SUPPLIER_NAME,
+                ClothesEntry.COLUMN_CLOTHES_SUPPLIER_EMAIL,
+                ClothesEntry.COLUMN_CLOTHES_IMAGE };
 
         // This loader will execute the ContentProvider's query method on a background thread
         return new CursorLoader(this,   // Parent activity context
@@ -406,21 +471,28 @@ public class EditorActivity extends AppCompatActivity implements
             // Find the columns of pet attributes that we're interested in
             int nameColumnIndex = cursor.getColumnIndex(ClothesEntry.COLUMN_CLOTHES_NAME);
             int typeColumnIndex = cursor.getColumnIndex(ClothesEntry.COLUMN_CLOTHES_TYPE);
-            int supplierColumnIndex = cursor.getColumnIndex(ClothesEntry.COLUMN_CLOTHES_SUPPLIER);
             int priceColumnIndex = cursor.getColumnIndex(ClothesEntry.COLUMN_CLOTHES_PRICE);
             int quantityColumnIndex = cursor.getColumnIndex(ClothesEntry.COLUMN_CLOTHES_QUANTITY);
+            int supplierNameColumnIndex = cursor.getColumnIndex(ClothesEntry.COLUMN_CLOTHES_SUPPLIER_NAME);
+            int supplierEmailColumnIndex = cursor.getColumnIndex(ClothesEntry.COLUMN_CLOTHES_SUPPLIER_EMAIL);
+            int imageColumnIndex = cursor.getColumnIndex(ClothesEntry.COLUMN_CLOTHES_IMAGE);
 
             // Extract out the value from the Cursor for the given column index
             String name = cursor.getString(nameColumnIndex);
             int type = cursor.getInt(typeColumnIndex);
-            int supplier = cursor.getInt(supplierColumnIndex);
             int price = cursor.getInt(priceColumnIndex);
             int quantity = cursor.getInt(quantityColumnIndex);
+            String supplierName = cursor.getString(supplierNameColumnIndex);
+            String supplierEmail = cursor.getString(supplierEmailColumnIndex);
+            int image = cursor.getInt(imageColumnIndex);
 
             // Update the views on the screen with the values from the database
             mNameEditText.setText(name);
             mPriceEditText.setText(Integer.toString(price));
             mQuantityEditText.setText(Integer.toString(quantity));
+            mSupplierNameEditText.setText(supplierName);
+            mNameEditText.setText(supplierEmail);
+            mItemImage.setImageResource(image);
 
             // Gender is a dropdown spinner, so map the constant value from the database
             // into one of the dropdown options (0 is Unknown, 1 is Male, 2 is Female).
@@ -430,17 +502,6 @@ public class EditorActivity extends AppCompatActivity implements
                     mTypeSpinner.setSelection(1);
                     break;
                 case ClothesEntry.TYPE_TOP:
-                    mTypeSpinner.setSelection(2);
-                    break;
-                default:
-                    mTypeSpinner.setSelection(0);
-                    break;
-            }
-            switch (supplier) {
-                case ClothesEntry.SUPPLIER_ZARA:
-                    mTypeSpinner.setSelection(1);
-                    break;
-                case ClothesEntry.SUPPLIER_MONKI:
                     mTypeSpinner.setSelection(2);
                     break;
                 default:
@@ -457,7 +518,10 @@ public class EditorActivity extends AppCompatActivity implements
         mPriceEditText.setText("");
         mQuantityEditText.setText("");
         mTypeSpinner.setSelection(0); // Select "Unknown" gender
-        mSupplierSpinner.setSelection(0);
+        mNameEditText.setText("");
+        mSupplierNameEditText.setText("");
+        mSupplierEmailEditText.setText("");
+
     }
 
     /**

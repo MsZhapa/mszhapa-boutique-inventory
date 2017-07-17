@@ -141,10 +141,10 @@ public class ClothesProvider extends ContentProvider {
         }
 
         // If the weight is provided, check that it's greater than or equal to 0 kg
-        Integer supplier = values.getAsInteger(ClothesEntry.COLUMN_CLOTHES_SUPPLIER);
-        if (supplier == null || !ClothesEntry.isValidSupplier(type)) {
-            throw new IllegalArgumentException("The piece of clothing requires valid supplier");
-        }
+       // Integer supplier = values.getAsInteger(ClothesEntry.COLUMN_CLOTHES_SUPPLIER);
+       // if (supplier == null || !ClothesEntry.isValidSupplier(type)) {
+       //     throw new IllegalArgumentException("The piece of clothing requires valid supplier");
+       // }
 
         // If the weight is provided, check that it's greater than or equal to 0 kg
         Integer quantity = values.getAsInteger(ClothesEntry.COLUMN_CLOTHES_QUANTITY);
@@ -215,14 +215,6 @@ public class ClothesProvider extends ContentProvider {
             }
         }
 
-        if (values.containsKey(ClothesEntry.COLUMN_CLOTHES_SUPPLIER)) {
-            Integer supplier = values.getAsInteger(ClothesEntry.COLUMN_CLOTHES_SUPPLIER);
-            if (supplier == null || !ClothesEntry.isValidType(supplier)) {
-                throw new IllegalArgumentException("The piece of clothing requires valid supplier");
-            }
-        }
-
-
         if (values.containsKey(ClothesEntry.COLUMN_CLOTHES_QUANTITY)) {
             // Check that the weight is greater than or equal to 0 kg
             Integer quantity = values.getAsInteger(ClothesEntry.COLUMN_CLOTHES_QUANTITY);
@@ -235,6 +227,18 @@ public class ClothesProvider extends ContentProvider {
             Integer price = values.getAsInteger(ClothesEntry.COLUMN_CLOTHES_PRICE);
             if (price != null && price < 0) {
                 throw new IllegalArgumentException("The piece of clothing requires valid price");
+            }
+        }
+        if (values.containsKey(ClothesEntry.COLUMN_CLOTHES_SUPPLIER_NAME)) {
+            String supplierName = values.getAsString(ClothesEntry.COLUMN_CLOTHES_SUPPLIER_NAME);
+            if (supplierName == null) {
+                throw new IllegalArgumentException("The piece of clothing requires a supplier name");
+            }
+        }
+        if (values.containsKey(ClothesEntry.COLUMN_CLOTHES_SUPPLIER_EMAIL)) {
+            String supplierEmail = values.getAsString(ClothesEntry.COLUMN_CLOTHES_SUPPLIER_EMAIL);
+            if (supplierEmail == null) {
+                throw new IllegalArgumentException("The piece of clothing requires a supplier email");
             }
         }
 
