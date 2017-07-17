@@ -27,10 +27,14 @@ import com.example.mszhapa.mszhapaboutiqueinventory.data.ClothesContract.Clothes
 public class InventoryActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
-    /** Identifier for the pet data loader */
+    /**
+     * Identifier for the pet data loader
+     */
     private static final int CLOTHES_LOADER = 0;
 
-    /** Adapter for the ListView */
+    /**
+     * Adapter for the ListView
+     */
     ClothesCursorAdapter mCursorAdapter;
 
     @Override
@@ -66,11 +70,12 @@ public class InventoryActivity extends AppCompatActivity implements
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 Intent intent = new Intent(InventoryActivity.this, EditorActivity.class);
 
-                Uri currentClothesUri= ContentUris.withAppendedId(ClothesEntry.CONTENT_URI, id);
+                Uri currentClothesUri = ContentUris.withAppendedId(ClothesEntry.CONTENT_URI, id);
                 intent.setData(currentClothesUri);
                 startActivity(intent);
 
             }
+
         });
         // Kick off the loader
         getLoaderManager().initLoader(CLOTHES_LOADER, null, this);
@@ -89,7 +94,7 @@ public class InventoryActivity extends AppCompatActivity implements
         values.put(ClothesEntry.COLUMN_CLOTHES_QUANTITY, 8);
         values.put(ClothesEntry.COLUMN_CLOTHES_SUPPLIER_NAME, "ALEXA");
         values.put(ClothesEntry.COLUMN_CLOTHES_SUPPLIER_EMAIL, "ana@fg.cim");
-        values.put(ClothesEntry.COLUMN_CLOTHES_IMAGE, R.drawable.add);
+
 
         // Insert a new row for Toto into the provider using the ContentResolver.
         // Use the {@link PetEntry#CONTENT_URI} to indicate that we want to insert
@@ -138,7 +143,7 @@ public class InventoryActivity extends AppCompatActivity implements
                 ClothesEntry.COLUMN_CLOTHES_NAME,
                 ClothesEntry.COLUMN_CLOTHES_PRICE,
                 ClothesEntry.COLUMN_CLOTHES_QUANTITY,
-                ClothesEntry.COLUMN_CLOTHES_IMAGE };
+                ClothesEntry.COLUMN_CLOTHES_IMAGE};
 
         // This loader will execute the ContentProvider's query method on a background thread
         return new CursorLoader(this,   // Parent activity context

@@ -45,7 +45,7 @@ public class ClothesDbHelper extends SQLiteOpenHelper {
                 + ClothesEntry.COLUMN_CLOTHES_QUANTITY + " INTEGER NOT NULL,"
                 + ClothesEntry.COLUMN_CLOTHES_SUPPLIER_NAME + " TEXT, "
                 + ClothesEntry.COLUMN_CLOTHES_SUPPLIER_EMAIL + " TEXT, "
-                + ClothesEntry.COLUMN_CLOTHES_IMAGE + " TEXT );";
+                + ClothesEntry.COLUMN_CLOTHES_IMAGE + " TEXT NOT NULL DEFAULT 'No images' );";
 
         // Execute the SQL statement
         db.execSQL(SQL_CREATE_CLOTHES_TABLE);

@@ -1,6 +1,5 @@
 package com.example.mszhapa.mszhapaboutiqueinventory;
 
-import android.Manifest;
 import android.app.AlertDialog;
 import android.app.LoaderManager;
 import android.content.ContentValues;
@@ -8,40 +7,29 @@ import android.content.CursorLoader;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
-import com.example.mszhapa.mszhapaboutiqueinventory.data.ClothesContract;
 import com.example.mszhapa.mszhapaboutiqueinventory.data.ClothesContract.ClothesEntry;
 
-import java.io.File;
-
-
 /**
- * Created by MsZhapa on 15/07/2017.
+ * Created by MsZhapa on 17/07/2017.
  */
 
-public class EditorActivity extends AppCompatActivity implements
+public class DetailActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
     /** Identifier for the pet data loader */
@@ -53,31 +41,29 @@ public class EditorActivity extends AppCompatActivity implements
     private Uri mCurrentClothesUri;
 
     /** EditText field to enter the pet's name */
-    private EditText mNameEditText;
+    private TextView mNameTextView;
 
     /** EditText field to enter the pet's breed */
-    private Spinner mTypeSpinner;
+    private TextView mTypeTextView;
 
     /** EditText field to enter the pet's name */
-    private EditText mPriceEditText;
+    private TextView mPriceTextView;
 
     /** EditText field to enter the pet's name */
-    private EditText mQuantityEditText;
+    private EditText mItemQuantityEditText;
 
-    private ImageButton mImageBtn;
+    private Button mAddItem;
 
-    private String mCurrentPhotoUri = "no images";
+    private Button mSubtractItem;
+
+    private Button mContactSupplier;
+
 
     private ImageView mItemImage;
 
-    public static final int PICK_PHOTO_REQUEST = 20;
-    public static final int EXTERNAL_STORAGE_REQUEST_PERMISSION_CODE = 21;
+    private TextView mSupplierNameTextView;
 
-    private int mType = ClothesEntry.TYPE_OTHER;
-
-    private EditText mSupplierNameEditText;
-
-    private EditText mSupplierEmailEditText;
+    private TextView mSupplierEmailTextView;
 
     /** Boolean flag that keeps track of whether the pet has been edited (true) or not (false) */
     private boolean mClothesHasChanged = false;
@@ -97,7 +83,7 @@ public class EditorActivity extends AppCompatActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_editor);
+        setContentView(R.layout.activity_detail);
 
         // Examine the intent that was used to launch this activity,
         // in order to figure out if we're creating a new pet or editing an existing one.
@@ -125,127 +111,51 @@ public class EditorActivity extends AppCompatActivity implements
         }
 
         // Find all relevant views that we will need to read user input from
-        mItemImage = (ImageView) findViewById(R.id.product_image);
-        mImageBtn = (ImageButton) findViewById(R.id.image_selector);
-        mNameEditText = (EditText) findViewById(R.id.edit_clothes_name);
-        mTypeSpinner = (Spinner) findViewById(R.id.spinner_type);
-        mPriceEditText = (EditText) findViewById(R.id.edit_clothes_price);
-        mQuantityEditText = (EditText) findViewById(R.id.edit_clothes_quantity);
-        mSupplierNameEditText = (EditText) findViewById(R.id.edit_supplier_name);
-        mSupplierEmailEditText = (EditText) findViewById(R.id.edit_supplier_email);
-
+        mNameTextView = (TextView) findViewById(R.id.display_name);
+        mTypeTextView = (TextView) findViewById(R.id.display_type);
+        mPriceTextView = (TextView) findViewById(R.id.display_price);
+        mItemQuantityEditText = (EditText) findViewById(R.id.edit_item_quantity);
+        mSupplierNameTextView = (TextView) findViewById(R.id.display_supplier_name);
+        mSupplierEmailTextView = (TextView) findViewById(R.id.display_supplier_email);
+        mAddItem = (Button) findViewById(R.id.add_item);
+        mSubtractItem = (Button) findViewById(R.id.subtract_item);
+        mContactSupplier = (Button) findViewById(R.id.contact_supplier);
+        mItemImage = (ImageView) findViewById(R.id.display_image);
 
         // Setup OnTouchListeners on all the input fields, so we can determine if the user
         // has touched or modified them. This will let us know if there are unsaved changes
         // or not, if the user tries to leave the editor without saving.
-        mNameEditText.setOnTouchListener(mTouchListener);
-        mTypeSpinner.setOnTouchListener(mTouchListener);
-        mSupplierNameEditText.setOnTouchListener(mTouchListener);
-        mSupplierEmailEditText.setOnTouchListener(mTouchListener);
-        mPriceEditText.setOnTouchListener(mTouchListener);
-        mQuantityEditText.setOnTouchListener(mTouchListener);
 
+        mItemQuantityEditText.setOnTouchListener(mTouchListener);
 
-        mImageBtn.setOnClickListener(new View.OnClickListener() {
+        mAddItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                onPhotoProductUpdate(view);
+
                 mClothesHasChanged = true;
             }
         });
-        mItemImage.setOnClickListener(new View.OnClickListener() {
+        mSubtractItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                onPhotoProductUpdate(view);
+
+                mClothesHasChanged = true;
+            }
+        });
+        mContactSupplier.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+
             }
         });
 
-
-        setupTypeSpinner();
-    }
-
-    public void onPhotoProductUpdate(View view) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            //We are on M or above so we need to ask for runtime permissions
-            if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-                invokeGetPhoto();
-            } else {
-                // we are here if we do not all ready have permissions
-                String[] permisionRequest = {Manifest.permission.READ_EXTERNAL_STORAGE};
-                requestPermissions(permisionRequest, EXTERNAL_STORAGE_REQUEST_PERMISSION_CODE);
-            }
-        } else {
-            //We are on an older devices so we dont have to ask for runtime permissions
-            invokeGetPhoto();
-        }
-
-    }
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == EXTERNAL_STORAGE_REQUEST_PERMISSION_CODE && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            //We got a GO from the user
-            invokeGetPhoto();
-        } else {
-            Toast.makeText(this, R.string.imposibru, Toast.LENGTH_LONG).show();
-        }
-    }
-
-    private void invokeGetPhoto() {
-        // invoke the image gallery using an implict intent.
-        Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
-
-        // where do we want to find the data?
-        File pictureDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-        String pictureDirectoryPath = pictureDirectory.getPath();
-        // finally, get a URI representation
-        Uri data = Uri.parse(pictureDirectoryPath);
-
-        // set the data and type.  Get all image types.
-        photoPickerIntent.setDataAndType(data, "image/*");
-
-        // we will invoke this activity, and get something back from it.
-        startActivityForResult(photoPickerIntent, PICK_PHOTO_REQUEST);
     }
 
     /**
      * Setup the dropdown spinner that allows the user to select the gender of the pet.
      */
-    private void setupTypeSpinner() {
-        // Create adapter for spinner. The list options are from the String array it will use
-        // the spinner will use the default layout
-        ArrayAdapter typeSpinnerAdapter = ArrayAdapter.createFromResource(this,
-                R.array.array_type_options, android.R.layout.simple_spinner_item);
 
-        // Specify dropdown layout style - simple list view with 1 item per line
-        typeSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
-
-        // Apply the adapter to the spinner
-        mTypeSpinner.setAdapter(typeSpinnerAdapter);
-
-        // Set the integer mSelected to the constant values
-        mTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String selection = (String) parent.getItemAtPosition(position);
-                if (!TextUtils.isEmpty(selection)) {
-                    if (selection.equals(getString(R.string.type_pants))) {
-                        mType = ClothesContract.ClothesEntry.TYPE_PANTS;
-                    } else if (selection.equals(getString(R.string.type_top))) {
-                        mType = ClothesContract.ClothesEntry.TYPE_TOP;
-                    } else {
-                        mType = ClothesContract.ClothesEntry.TYPE_OTHER;
-                    }
-                }
-            }
-
-            // Because AdapterView is an abstract class, onNothingSelected must be defined
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-                mType = ClothesContract.ClothesEntry.TYPE_OTHER;
-            }
-        });
-    }
 
     /**
      * Get user input from editor and save pet into database.
@@ -253,18 +163,15 @@ public class EditorActivity extends AppCompatActivity implements
     private void saveItem() {
         // Read from input fields
         // Use trim to eliminate leading or trailing white space
-        String nameString = mNameEditText.getText().toString().trim();
-        String priceString = mPriceEditText.getText().toString().trim();
-        String quantityString = mQuantityEditText.getText().toString().trim();
-        String supplierNameString = mSupplierNameEditText.getText().toString().trim();
-        String supplierEmailString = mSupplierEmailEditText.getText().toString().trim();
+
+        String quantityString = mItemQuantityEditText.getText().toString().trim();
+
 
 
         // Check if this is supposed to be a new pet
         // and check if all the fields in the editor are blank
         if (mCurrentClothesUri == null &&
-                TextUtils.isEmpty(nameString) && TextUtils.isEmpty(priceString) &&
-                TextUtils.isEmpty(quantityString) && mType == ClothesEntry.TYPE_OTHER && TextUtils.isEmpty(supplierNameString) && TextUtils.isEmpty(supplierEmailString)) {
+                TextUtils.isEmpty(quantityString)) {
             // Since no fields were modified, we can return early without creating a new pet.
             // No need to create ContentValues and no need to do any ContentProvider operations.
             Toast.makeText(this, R.string.imposibru, Toast.LENGTH_SHORT).show();
@@ -276,25 +183,11 @@ public class EditorActivity extends AppCompatActivity implements
         // and pet attributes from the editor are the values.
         ContentValues values = new ContentValues();
 
-        values.put(ClothesEntry.COLUMN_CLOTHES_NAME, nameString);
-        values.put(ClothesEntry.COLUMN_CLOTHES_TYPE, mType);
-
-        int price = 0;
-        if (!TextUtils.isEmpty(priceString)) {
-            price = Integer.parseInt(priceString);
-        }
-        values.put(ClothesEntry.COLUMN_CLOTHES_PRICE, price);
-
         int quantity = 0;
         if (!TextUtils.isEmpty(quantityString)) {
             quantity = Integer.parseInt(quantityString);
         }
         values.put(ClothesEntry.COLUMN_CLOTHES_QUANTITY, quantity);
-        values.put(ClothesEntry.COLUMN_CLOTHES_SUPPLIER_NAME, supplierNameString);
-        values.put(ClothesEntry.COLUMN_CLOTHES_SUPPLIER_EMAIL, supplierEmailString);
-        values.put(ClothesEntry.COLUMN_CLOTHES_IMAGE, mCurrentPhotoUri);
-        // If the weight is not provided by the user, don't try to parse the string into an
-        // integer value. Use 0 by default.
 
 
         // Determine if this is a new or existing pet by checking if mCurrentClothesUri is null or not
@@ -377,7 +270,7 @@ public class EditorActivity extends AppCompatActivity implements
                 // If the pet hasn't changed, continue with navigating up to parent activity
                 // which is the {@link CatalogActivity}.
                 if (!mClothesHasChanged) {
-                    NavUtils.navigateUpFromSameTask(EditorActivity.this);
+                    NavUtils.navigateUpFromSameTask(DetailActivity.this);
                     return true;
                 }
 
@@ -389,7 +282,7 @@ public class EditorActivity extends AppCompatActivity implements
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 // User clicked "Discard" button, navigate to parent activity.
-                                NavUtils.navigateUpFromSameTask(EditorActivity.this);
+                                NavUtils.navigateUpFromSameTask(DetailActivity.this);
                             }
                         };
 
@@ -424,24 +317,6 @@ public class EditorActivity extends AppCompatActivity implements
 
         // Show dialog that there are unsaved changes
         showUnsavedChangesDialog(discardButtonClickListener);
-    }
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == PICK_PHOTO_REQUEST && resultCode == RESULT_OK) {
-            if (data != null) {
-                //If we are here, everything processed successfully and we have an Uri data
-                Uri mProductPhotoUri = data.getData();
-                mCurrentPhotoUri = mProductPhotoUri.toString();
-                Log.d(TAG, "Selected images " + mProductPhotoUri);
-
-                //We use Glide to import photo images
-                Glide.with(this).load(mProductPhotoUri)
-                        .placeholder(R.drawable.pic)
-                        .crossFade()
-                        .fitCenter()
-                        .into(mItemImage);
-            }
-        }
     }
 
     @Override
@@ -497,40 +372,28 @@ public class EditorActivity extends AppCompatActivity implements
             int image = cursor.getInt(imageColumnIndex);
 
             // Update the views on the screen with the values from the database
-            mNameEditText.setText(name);
-            mPriceEditText.setText(Integer.toString(price));
-            mQuantityEditText.setText(Integer.toString(quantity));
-            mSupplierNameEditText.setText(supplierName);
-            mSupplierEmailEditText.setText(supplierEmail);
+            mNameTextView.setText(name);
+            mPriceTextView.setText(Integer.toString(price));
+            mItemQuantityEditText.setText(Integer.toString(quantity));
+            mSupplierNameTextView.setText(supplierName);
+            mSupplierEmailTextView.setText(supplierEmail);
             mItemImage.setImageResource(image);
+            mTypeTextView.setText(type);
 
-            // Gender is a dropdown spinner, so map the constant value from the database
-            // into one of the dropdown options (0 is Unknown, 1 is Male, 2 is Female).
-            // Then call setSelection() so that option is displayed on screen as the current selection.
-            switch (type) {
-                case ClothesEntry.TYPE_PANTS:
-                    mTypeSpinner.setSelection(1);
-                    break;
-                case ClothesEntry.TYPE_TOP:
-                    mTypeSpinner.setSelection(2);
-                    break;
-                default:
-                    mTypeSpinner.setSelection(0);
-                    break;
             }
-        }
+
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         // If the loader is invalidated, clear out all the data from the input fields.
-        mNameEditText.setText("");
-        mTypeSpinner.setSelection(0); // Select "Unknown" gender
-        mPriceEditText.setText("");
-        mQuantityEditText.setText("");
-        mSupplierNameEditText.setText("");
-        mSupplierEmailEditText.setText("");
-        mItemImage.setImageResource(R.drawable.pic);
+        mNameTextView.setText("");
+        mTypeTextView.setText(""); // Select "Unknown" gender
+        mPriceTextView.setText("");
+        mItemQuantityEditText.setText("");
+        mSupplierNameTextView.setText("");
+        mSupplierEmailTextView.setText("");
+        mItemImage.setImageResource(R.drawable.add);
 
     }
 

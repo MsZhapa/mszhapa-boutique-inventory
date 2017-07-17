@@ -241,12 +241,7 @@ public class ClothesProvider extends ContentProvider {
                 throw new IllegalArgumentException("The piece of clothing requires a supplier email");
             }
         }
-        if (values.containsKey(ClothesEntry.COLUMN_CLOTHES_IMAGE)) {
-            Integer image = values.getAsInteger(ClothesEntry.COLUMN_CLOTHES_IMAGE);
-            if (image != null && image < 0) {
-                throw new IllegalArgumentException("The piece of clothing requires a valid image");
-            }
-        }
+
 
         // No need to check the breed, any value is valid (including null).
 

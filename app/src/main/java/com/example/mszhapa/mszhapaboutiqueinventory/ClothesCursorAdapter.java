@@ -1,11 +1,14 @@
 package com.example.mszhapa.mszhapaboutiqueinventory;
 
+import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CursorAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -55,17 +58,19 @@ public class ClothesCursorAdapter extends CursorAdapter {
      *                correct row.
      */
     @Override
-    public void bindView(View view, Context context, Cursor cursor) {
+    public void bindView(View view, Context context, final Cursor cursor) {
         // Find individual views that we want to modify in the list item layout
         TextView nameTextView = (TextView) view.findViewById(R.id.item_name);
         TextView priceTextView = (TextView) view.findViewById(R.id.item_price);
-        TextView quantityTextView = (TextView) view.findViewById(R.id.item_quantity);
+        final TextView quantityTextView = (TextView) view.findViewById(R.id.item_quantity);
         ImageView itemImageView = (ImageView) view.findViewById(R.id.item_thumbnail);
+        final Button saleButton = (Button) view.findViewById(R.id.sale_button);
 
         // Find the columns of pet attributes that we're interested in
+        final int columnID = cursor.getColumnIndex(ClothesEntry._ID);
         int nameColumnIndex = cursor.getColumnIndex(ClothesEntry.COLUMN_CLOTHES_NAME);
         int priceColumnIndex = cursor.getColumnIndex(ClothesEntry.COLUMN_CLOTHES_PRICE);
-        int quantityColumnIndex = cursor.getColumnIndex(ClothesEntry.COLUMN_CLOTHES_QUANTITY);
+        final int quantityColumnIndex = cursor.getColumnIndex(ClothesEntry.COLUMN_CLOTHES_QUANTITY);
         int imageColumnIndex = cursor.getColumnIndex(ClothesEntry.COLUMN_CLOTHES_IMAGE);
 
 
@@ -73,6 +78,11 @@ public class ClothesCursorAdapter extends CursorAdapter {
         String clothesName = cursor.getString(nameColumnIndex);
         int price = cursor.getInt(priceColumnIndex);
         int quantity = cursor.getInt(quantityColumnIndex);
+        if (quantity == 0) {
+            saleButton.setEnabled(false);
+        }
+
+
         Uri imageUri = Uri.parse(cursor.getString(imageColumnIndex));
 
 
@@ -87,5 +97,39 @@ public class ClothesCursorAdapter extends CursorAdapter {
                 .centerCrop()
                 .into(itemImageView);
 
+        final int position = cursor.getPosition();
+        saleButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                cursor.moveToPosition(position);
+                int oldQuantity = (cursor.getInt(quantityColumnIndex));
+                if (oldQuantity > 0) {
+                    saleButton.setEnabled(true);
+                    oldQuantity--;
+                    if (oldQuantity >= 0) {
+                        int quantity = oldQuantity;
+                        ContentValues contentValues = new ContentValues();
+                        contentValues.put(ClothesEntry.COLUMN_CLOTHES_QUANTITY, quantity);
+                        String whereArg = ClothesEntry._ID + " =?";
+                        //Get the item id which should be updated
+                        int item_id = cursor.getInt(columnID);
+                        String itemIDArgs = Integer.toString(item_id);
+                        String[] selectionArgs = {itemIDArgs};
+                        int rowsAffected = view.getContext().getContentResolver().update(
+                                ContentUris.withAppendedId(ClothesEntry.CONTENT_URI, item_id),
+                                contentValues,
+                                whereArg, selectionArgs);
+                        String newQu = cursor.getString(quantityColumnIndex);
+                        quantityTextView.setText(newQu);
+                    } else {
+                        saleButton.setEnabled(false);
+                    }
+
+                }
+
+            }
+        });
+
     }
+
 }
