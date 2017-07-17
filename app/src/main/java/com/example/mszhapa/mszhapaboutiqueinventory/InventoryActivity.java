@@ -64,24 +64,14 @@ public class InventoryActivity extends AppCompatActivity implements
         clothesListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                // Create new intent to go to {@link EditorActivity}
                 Intent intent = new Intent(InventoryActivity.this, EditorActivity.class);
 
-                // Form the content URI that represents the specific pet that was clicked on,
-                // by appending the "id" (passed as input to this method) onto the
-                // {@link PetEntry#CONTENT_URI}.
-                // For example, the URI would be "content://com.example.android.pets/pets/2"
-                // if the pet with ID 2 was clicked on.
-                Uri currentClothesUri = ContentUris.withAppendedId(ClothesEntry.CONTENT_URI, id);
-
-                // Set the URI on the data field of the intent
+                Uri currentClothesUri= ContentUris.withAppendedId(ClothesEntry.CONTENT_URI, id);
                 intent.setData(currentClothesUri);
-
-                // Launch the {@link EditorActivity} to display the data for the current pet.
                 startActivity(intent);
+
             }
         });
-
         // Kick off the loader
         getLoaderManager().initLoader(CLOTHES_LOADER, null, this);
     }
@@ -94,11 +84,12 @@ public class InventoryActivity extends AppCompatActivity implements
         // and Toto's pet attributes are the values.
         ContentValues values = new ContentValues();
         values.put(ClothesEntry.COLUMN_CLOTHES_NAME, "H&M garment");
-        values.put(ClothesEntry.COLUMN_CLOTHES_TYPE, ClothesEntry.TYPE_PANTS);
+        values.put(ClothesEntry.COLUMN_CLOTHES_TYPE, ClothesEntry.TYPE_OTHER);
         values.put(ClothesEntry.COLUMN_CLOTHES_PRICE, 7);
         values.put(ClothesEntry.COLUMN_CLOTHES_QUANTITY, 8);
-        values.put(ClothesEntry.COLUMN_CLOTHES_SUPPLIER_NAME, "Someone");
-        values.put(ClothesEntry.COLUMN_CLOTHES_SUPPLIER_EMAIL, "Someone@SOMEWHERE.com");
+        values.put(ClothesEntry.COLUMN_CLOTHES_SUPPLIER_NAME, "ALEXA");
+        values.put(ClothesEntry.COLUMN_CLOTHES_SUPPLIER_EMAIL, "ana@fg.cim");
+        values.put(ClothesEntry.COLUMN_CLOTHES_IMAGE, R.drawable.add);
 
         // Insert a new row for Toto into the provider using the ContentResolver.
         // Use the {@link PetEntry#CONTENT_URI} to indicate that we want to insert

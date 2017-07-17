@@ -14,7 +14,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.annotation.NonNull;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -107,16 +106,18 @@ public class EditorActivity extends AppCompatActivity implements
 
         // If the intent DOES NOT contain a pet content URI, then we know that we are
         // creating a new pet.
+        // If the intent DOES NOT contain a pet content URI, then we know that we are
+        // creating a new pet.
         if (mCurrentClothesUri == null) {
             // This is a new pet, so change the app bar to say "Add a Pet"
-            setTitle(getString(R.string.editor_activity_title_new_item));
+            setTitle(getString(R.string.editor_activity_title_new_pet));
 
             // Invalidate the options menu, so the "Delete" menu option can be hidden.
             // (It doesn't make sense to delete a pet that hasn't been created yet.)
             invalidateOptionsMenu();
         } else {
             // Otherwise this is an existing pet, so change app bar to say "Edit Pet"
-            setTitle(getString(R.string.editor_activity_title_edit_item));
+            setTitle(getString(R.string.editor_activity_title_edit_pet));
 
             // Initialize a loader to read the pet data from the database
             // and display the current values in the editor
@@ -126,10 +127,10 @@ public class EditorActivity extends AppCompatActivity implements
         // Find all relevant views that we will need to read user input from
         mNameEditText = (EditText) findViewById(R.id.edit_clothes_name);
         mTypeSpinner = (Spinner) findViewById(R.id.spinner_type);
-        mSupplierNameEditText = (EditText) findViewById(R.id.edit_supplier_name);
-        mSupplierEmailEditText = (EditText) findViewById(R.id.edit_supplier_email);
         mPriceEditText = (EditText) findViewById(R.id.edit_clothes_price);
         mQuantityEditText = (EditText) findViewById(R.id.edit_clothes_quantity);
+        mSupplierNameEditText = (EditText) findViewById(R.id.edit_supplier_name);
+        mSupplierEmailEditText = (EditText) findViewById(R.id.edit_supplier_email);
         mImageBtn = (ImageButton) findViewById(R.id.image_selector);
         mItemImage = (ImageView) findViewById(R.id.item_image);
 
@@ -172,7 +173,7 @@ public class EditorActivity extends AppCompatActivity implements
 
     }
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == EXTERNAL_STORAGE_REQUEST_PERMISSION_CODE && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             //We got a GO from the user
@@ -266,15 +267,10 @@ public class EditorActivity extends AppCompatActivity implements
         // Create a ContentValues object where column names are the keys,
         // and pet attributes from the editor are the values.
         ContentValues values = new ContentValues();
+
         values.put(ClothesEntry.COLUMN_CLOTHES_NAME, nameString);
         values.put(ClothesEntry.COLUMN_CLOTHES_TYPE, mType);
-        values.put(ClothesEntry.COLUMN_CLOTHES_PRICE, priceString);
-        values.put(ClothesEntry.COLUMN_CLOTHES_QUANTITY, quantityString);
-        values.put(ClothesEntry.COLUMN_CLOTHES_SUPPLIER_NAME, supplierNameString);
-        values.put(ClothesEntry.COLUMN_CLOTHES_SUPPLIER_EMAIL, supplierEmailString);
-        values.put(ClothesEntry.COLUMN_CLOTHES_IMAGE, mCurrentPhotoUri);
-        // If the weight is not provided by the user, don't try to parse the string into an
-        // integer value. Use 0 by default.
+
         int price = 0;
         if (!TextUtils.isEmpty(priceString)) {
             price = Integer.parseInt(priceString);
@@ -286,6 +282,11 @@ public class EditorActivity extends AppCompatActivity implements
             quantity = Integer.parseInt(quantityString);
         }
         values.put(ClothesEntry.COLUMN_CLOTHES_QUANTITY, quantity);
+        values.put(ClothesEntry.COLUMN_CLOTHES_SUPPLIER_NAME, supplierNameString);
+        values.put(ClothesEntry.COLUMN_CLOTHES_SUPPLIER_EMAIL, supplierEmailString);
+        values.put(ClothesEntry.COLUMN_CLOTHES_IMAGE, mCurrentPhotoUri);
+        // If the weight is not provided by the user, don't try to parse the string into an
+        // integer value. Use 0 by default.
 
 
         // Determine if this is a new or existing pet by checking if mCurrentClothesUri is null or not
@@ -469,6 +470,7 @@ public class EditorActivity extends AppCompatActivity implements
         // (This should be the only row in the cursor)
         if (cursor.moveToFirst()) {
             // Find the columns of pet attributes that we're interested in
+            int idColumnIndex = cursor.getColumnIndex(ClothesEntry._ID);
             int nameColumnIndex = cursor.getColumnIndex(ClothesEntry.COLUMN_CLOTHES_NAME);
             int typeColumnIndex = cursor.getColumnIndex(ClothesEntry.COLUMN_CLOTHES_TYPE);
             int priceColumnIndex = cursor.getColumnIndex(ClothesEntry.COLUMN_CLOTHES_PRICE);
@@ -491,7 +493,7 @@ public class EditorActivity extends AppCompatActivity implements
             mPriceEditText.setText(Integer.toString(price));
             mQuantityEditText.setText(Integer.toString(quantity));
             mSupplierNameEditText.setText(supplierName);
-            mNameEditText.setText(supplierEmail);
+            mSupplierEmailEditText.setText(supplierEmail);
             mItemImage.setImageResource(image);
 
             // Gender is a dropdown spinner, so map the constant value from the database
@@ -515,12 +517,12 @@ public class EditorActivity extends AppCompatActivity implements
     public void onLoaderReset(Loader<Cursor> loader) {
         // If the loader is invalidated, clear out all the data from the input fields.
         mNameEditText.setText("");
+        mTypeSpinner.setSelection(0); // Select "Unknown" gender
         mPriceEditText.setText("");
         mQuantityEditText.setText("");
-        mTypeSpinner.setSelection(0); // Select "Unknown" gender
-        mNameEditText.setText("");
         mSupplierNameEditText.setText("");
         mSupplierEmailEditText.setText("");
+        mItemImage.setImageResource(R.drawable.add);
 
     }
 

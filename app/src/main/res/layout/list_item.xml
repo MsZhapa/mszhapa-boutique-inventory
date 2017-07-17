@@ -7,7 +7,7 @@
 
     <ImageView
         android:layout_width="0dp"
-        android:id="@id/item_image"
+        android:id="@+id/item_thumbnail"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:layout_weight="1"
@@ -68,9 +68,4 @@
             android:textColor="#2B3D4D" />
 
     </RelativeLayout>
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="sell"
-        android:layout_gravity="center"/>
 </LinearLayout>

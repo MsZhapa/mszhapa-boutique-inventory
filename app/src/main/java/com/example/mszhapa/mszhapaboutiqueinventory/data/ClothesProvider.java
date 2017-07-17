@@ -214,19 +214,19 @@ public class ClothesProvider extends ContentProvider {
                 throw new IllegalArgumentException("The piece of clothing requires valid type");
             }
         }
+        if (values.containsKey(ClothesEntry.COLUMN_CLOTHES_PRICE)) {
+            // Check that the weight is greater than or equal to 0 kg
+            Integer price = values.getAsInteger(ClothesEntry.COLUMN_CLOTHES_PRICE);
+            if (price != null && price < 0) {
+                throw new IllegalArgumentException("The piece of clothing requires valid price");
+            }
+        }
 
         if (values.containsKey(ClothesEntry.COLUMN_CLOTHES_QUANTITY)) {
             // Check that the weight is greater than or equal to 0 kg
             Integer quantity = values.getAsInteger(ClothesEntry.COLUMN_CLOTHES_QUANTITY);
             if (quantity != null && quantity < 0) {
                 throw new IllegalArgumentException("The piece of clothing requires valid quantity");
-            }
-        }
-        if (values.containsKey(ClothesEntry.COLUMN_CLOTHES_PRICE)) {
-            // Check that the weight is greater than or equal to 0 kg
-            Integer price = values.getAsInteger(ClothesEntry.COLUMN_CLOTHES_PRICE);
-            if (price != null && price < 0) {
-                throw new IllegalArgumentException("The piece of clothing requires valid price");
             }
         }
         if (values.containsKey(ClothesEntry.COLUMN_CLOTHES_SUPPLIER_NAME)) {
@@ -239,6 +239,12 @@ public class ClothesProvider extends ContentProvider {
             String supplierEmail = values.getAsString(ClothesEntry.COLUMN_CLOTHES_SUPPLIER_EMAIL);
             if (supplierEmail == null) {
                 throw new IllegalArgumentException("The piece of clothing requires a supplier email");
+            }
+        }
+        if (values.containsKey(ClothesEntry.COLUMN_CLOTHES_IMAGE)) {
+            Integer image = values.getAsInteger(ClothesEntry.COLUMN_CLOTHES_IMAGE);
+            if (image != null && image < 0) {
+                throw new IllegalArgumentException("The piece of clothing requires a valid image");
             }
         }
 

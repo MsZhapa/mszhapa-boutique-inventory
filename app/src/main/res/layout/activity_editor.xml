@@ -16,22 +16,44 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_margin="10dp"
     android:orientation="vertical"
     android:padding="10dp"
     tools:context=".EditorActivity">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:orientation="horizontal"
+        android:layout_height="wrap_content">
+
+        <TextView
+            style="@style/CategoryStyle"
+            android:text="@string/add_photo" />
+
+        <LinearLayout
+            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="3"
+            android:layout_marginLeft="65dp"
+            android:orientation="horizontal">
 
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:id="@+id/item_image"
-        android:src="@drawable/hanger"/>
+        android:src="@drawable/pic"/>
 
     <ImageButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginLeft="25dp"
         android:id="@+id/image_selector"
-        android:src="@drawable/add"/>
+        android:src="@drawable/add_sign"/>
+            </LinearLayout>
+
+    </LinearLayout>
 
     <!-- Overview category -->
     <LinearLayout
@@ -90,46 +112,6 @@
                 android:spinnerMode="dropdown"/>
         </LinearLayout>
     </LinearLayout>
-    <!-- Supplier category -->
-    <LinearLayout
-        android:id="@+id/container_supplier"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <!-- Label -->
-        <TextView
-            android:text="@string/category_supplier"
-            style="@style/CategoryStyle" />
-
-        <!-- Input field -->
-        <EditText
-            android:id="@+id/edit_supplier_name"
-            android:hint="@string/hint_pet_weight"
-            android:inputType="text"
-            style="@style/EditorFieldStyle" />
-
-    </LinearLayout>
-    <!-- Supplier category -->
-    <LinearLayout
-        android:id="@+id/container_supplier_email"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <!-- Label -->
-        <TextView
-            android:text="@string/category_supplier"
-            style="@style/CategoryStyle" />
-
-        <!-- Input field -->
-        <EditText
-            android:id="@+id/edit_supplier_email"
-            android:hint="@string/hint_pet_weight"
-            android:inputType="text"
-            style="@style/EditorFieldStyle" />
-
-    </LinearLayout>
 
     <!-- Price category -->
     <LinearLayout
@@ -153,14 +135,14 @@
             <!-- Weight field -->
             <EditText
                 android:id="@+id/edit_clothes_price"
-                android:hint="@string/hint_pet_weight"
+                android:hint="@string/hint_clothes_price"
                 android:inputType="number"
                 style="@style/EditorFieldStyle" />
 
             <!-- Units for weight (kg) -->
             <TextView
                 android:id="@+id/label_price_units"
-                android:text="@string/unit_pet_weight"
+                android:text="@string/unit_price"
                 style="@style/EditorUnitsStyle"/>
         </RelativeLayout>
     </LinearLayout>
@@ -186,15 +168,72 @@
             <!-- Weight field -->
             <EditText
                 android:id="@+id/edit_clothes_quantity"
-                android:hint="@string/hint_pet_weight"
+                android:hint="@string/hint_clothes_quantity"
                 android:inputType="number"
                 style="@style/EditorFieldStyle" />
 
             <!-- Units for weight (kg) -->
             <TextView
                 android:id="@+id/label_quantity_units"
-                android:text="@string/unit_pet_weight"
+                android:text="@string/unit_quantity"
                 style="@style/EditorUnitsStyle"/>
         </RelativeLayout>
     </LinearLayout>
+
+    <!-- Supplier category -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <!-- Label -->
+        <TextView
+            android:text="@string/category_supplier_name"
+            style="@style/CategoryStyle" />
+
+        <LinearLayout
+            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="2"
+            android:paddingLeft="4dp"
+            android:orientation="vertical">
+
+        <!-- Input field -->
+        <EditText
+            android:id="@+id/edit_supplier_name"
+            android:hint="@string/hint_clothes_supplier_name"
+            android:inputType="text"
+            style="@style/EditorFieldStyle" />
+
+    </LinearLayout>
+        </LinearLayout>
+    <!-- Supplier category -->
+    <LinearLayout
+        android:id="@+id/container_supplier_email"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <!-- Label -->
+        <TextView
+            android:text="@string/category_supplier_email"
+            style="@style/CategoryStyle" />
+
+        <LinearLayout
+            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="2"
+            android:paddingLeft="4dp"
+            android:orientation="vertical">
+
+        <!-- Input field -->
+        <EditText
+            android:id="@+id/edit_supplier_email"
+            android:hint="@string/hint_clothes_supplier_email"
+            android:inputType="textEmailAddress"
+            style="@style/EditorFieldStyle" />
+
+    </LinearLayout>
+        </LinearLayout>
+
 </LinearLayout>

@@ -73,13 +73,17 @@
     <!-- Label for gender information in the editor [CHAR LIMIT=30] -->
     <string name="category_type">Type</string>
 
-    <string name="category_supplier">Supplier</string>
+    <string name="category_supplier_name">Supplier Name</string>
+
+    <string name="category_supplier_email">Supplier Email</string>
 
     <string name="category_price">Price</string>
 
     <string name="category_quantity">Quantity</string>
 
     <string name="imposibru">imposibru</string>
+
+    <string name="add_photo">Image</string>
 
     <!-- Label for measurement information in the editor [CHAR LIMIT=30] -->
     <string name="category_measurement">Measurement</string>
@@ -91,10 +95,19 @@
     <string name="hint_pet_breed">Breed</string>
 
     <!-- Text hint for name field in the editor [CHAR LIMIT=30] -->
-    <string name="hint_pet_weight">Weight</string>
+    <string name="hint_clothes_price">Price</string>
+
+    <string name="hint_clothes_quantity">Items in stock</string>
+
+
+    <string name="hint_clothes_supplier_name">Supplier Name</string>
+
+    <string name="hint_clothes_supplier_email">Supplier Email</string>
 
     <!-- Units for weight of the pet (kilograms) [CHAR LIMIT=5] -->
-    <string name="unit_pet_weight">kg</string>
+    <string name="unit_price">$</string>
+
+    <string name="unit_quantity">item/s</string>
 
     <!-- Label for dropdown menu option if the pet's gender is unknown [CHAR LIMIT=20] -->
     <string name="type_other">Other</string>

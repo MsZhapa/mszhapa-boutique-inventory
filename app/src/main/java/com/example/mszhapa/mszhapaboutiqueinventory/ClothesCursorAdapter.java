@@ -60,7 +60,7 @@ public class ClothesCursorAdapter extends CursorAdapter {
         TextView nameTextView = (TextView) view.findViewById(R.id.item_name);
         TextView priceTextView = (TextView) view.findViewById(R.id.item_price);
         TextView quantityTextView = (TextView) view.findViewById(R.id.item_quantity);
-        ImageView imageView = (ImageView) view.findViewById(R.id.item_image);
+        ImageView itemImageView = (ImageView) view.findViewById(R.id.item_thumbnail);
 
         // Find the columns of pet attributes that we're interested in
         int nameColumnIndex = cursor.getColumnIndex(ClothesEntry.COLUMN_CLOTHES_NAME);
@@ -81,11 +81,11 @@ public class ClothesCursorAdapter extends CursorAdapter {
         priceTextView.setText(Integer.toString(price));
         quantityTextView.setText(Integer.toString(quantity));
         Glide.with(context).load(imageUri)
-                .placeholder(R.mipmap.ic_launcher)
+                .placeholder(R.drawable.pic)
                 .error(R.drawable.add)
                 .crossFade()
                 .centerCrop()
-                .into(imageView);
+                .into(itemImageView);
 
     }
 }
