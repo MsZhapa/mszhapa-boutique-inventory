@@ -3,6 +3,7 @@ package com.example.mszhapa.mszhapaboutiqueinventory;
 import android.Manifest;
 import android.app.AlertDialog;
 import android.app.LoaderManager;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.CursorLoader;
 import android.content.DialogInterface;
@@ -24,6 +25,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -44,24 +46,37 @@ import java.io.File;
 public class EditorActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
-    /** Identifier for the pet data loader */
+    /**
+     * Identifier for the pet data loader
+     */
     private static final int EXISTING_CLOTHES_LOADER = 0;
 
-    private static final String TAG = EditorActivity.class.getSimpleName();;
+    private static final String TAG = EditorActivity.class.getSimpleName();
+    ;
 
-    /** Content URI for the existing pet (null if it's a new pet) */
+    /**
+     * Content URI for the existing pet (null if it's a new pet)
+     */
     private Uri mCurrentClothesUri;
 
-    /** EditText field to enter the pet's name */
+    /**
+     * EditText field to enter the pet's name
+     */
     private EditText mNameEditText;
 
-    /** EditText field to enter the pet's breed */
+    /**
+     * EditText field to enter the pet's breed
+     */
     private Spinner mTypeSpinner;
 
-    /** EditText field to enter the pet's name */
+    /**
+     * EditText field to enter the pet's name
+     */
     private EditText mPriceEditText;
 
-    /** EditText field to enter the pet's name */
+    /**
+     * EditText field to enter the pet's name
+     */
     private EditText mQuantityEditText;
 
     private ImageButton mImageBtn;
@@ -69,6 +84,13 @@ public class EditorActivity extends AppCompatActivity implements
     private String mCurrentPhotoUri = "R.drawable.welcome";
 
     private ImageView mItemImage;
+
+    private Button mAddItem;
+
+    private Button mSubtractItem;
+
+    private Button mContactSupplier;
+
 
     public static final int PICK_PHOTO_REQUEST = 20;
     public static final int EXTERNAL_STORAGE_REQUEST_PERMISSION_CODE = 21;
@@ -79,7 +101,9 @@ public class EditorActivity extends AppCompatActivity implements
 
     private EditText mSupplierEmailEditText;
 
-    /** Boolean flag that keeps track of whether the pet has been edited (true) or not (false) */
+    /**
+     * Boolean flag that keeps track of whether the pet has been edited (true) or not (false)
+     */
     private boolean mClothesHasChanged = false;
 
     /**
@@ -110,14 +134,14 @@ public class EditorActivity extends AppCompatActivity implements
         // creating a new pet.
         if (mCurrentClothesUri == null) {
             // This is a new pet, so change the app bar to say "Add a Pet"
-            setTitle(getString(R.string.editor_activity_title_new_pet));
+            setTitle(getString(R.string.editor_activity_title_new_item));
 
             // Invalidate the options menu, so the "Delete" menu option can be hidden.
             // (It doesn't make sense to delete a pet that hasn't been created yet.)
             invalidateOptionsMenu();
         } else {
             // Otherwise this is an existing pet, so change app bar to say "Edit Pet"
-            setTitle(getString(R.string.editor_activity_title_edit_pet));
+            setTitle(getString(R.string.editor_activity_title_edit_item));
 
             // Initialize a loader to read the pet data from the database
             // and display the current values in the editor
@@ -130,7 +154,10 @@ public class EditorActivity extends AppCompatActivity implements
         mNameEditText = (EditText) findViewById(R.id.edit_clothes_name);
         mTypeSpinner = (Spinner) findViewById(R.id.spinner_type);
         mPriceEditText = (EditText) findViewById(R.id.edit_clothes_price);
-        mQuantityEditText = (EditText) findViewById(R.id.edit_clothes_quantity);
+        mQuantityEditText = (EditText) findViewById(R.id.edit_item_quantity);
+        mAddItem = (Button) findViewById(R.id.add_item);
+        mSubtractItem = (Button) findViewById(R.id.subtract_item);
+        mContactSupplier = (Button) findViewById(R.id.contact_supplier);
         mSupplierNameEditText = (EditText) findViewById(R.id.edit_supplier_name);
         mSupplierEmailEditText = (EditText) findViewById(R.id.edit_supplier_email);
 
@@ -180,6 +207,7 @@ public class EditorActivity extends AppCompatActivity implements
         }
 
     }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -187,7 +215,7 @@ public class EditorActivity extends AppCompatActivity implements
             //We got a GO from the user
             invokeGetPhoto();
         } else {
-            Toast.makeText(this, R.string.imposibru, Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.editor_insert_item_failed, Toast.LENGTH_LONG).show();
         }
     }
 
@@ -267,7 +295,7 @@ public class EditorActivity extends AppCompatActivity implements
                 TextUtils.isEmpty(quantityString) && mType == ClothesEntry.TYPE_OTHER && TextUtils.isEmpty(supplierNameString) && TextUtils.isEmpty(supplierEmailString)) {
             // Since no fields were modified, we can return early without creating a new pet.
             // No need to create ContentValues and no need to do any ContentProvider operations.
-            Toast.makeText(this, R.string.imposibru, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.editor_insert_item_failed, Toast.LENGTH_SHORT).show();
             // No change has been made so we can return
             return;
         }
@@ -306,11 +334,11 @@ public class EditorActivity extends AppCompatActivity implements
             // Show a toast message depending on whether or not the insertion was successful.
             if (newUri == null) {
                 // If the new content URI is null, then there was an error with insertion.
-                Toast.makeText(this, getString(R.string.editor_insert_pet_failed),
+                Toast.makeText(this, getString(R.string.editor_insert_item_failed),
                         Toast.LENGTH_SHORT).show();
             } else {
                 // Otherwise, the insertion was successful and we can display a toast.
-                Toast.makeText(this, getString(R.string.editor_insert_pet_successful),
+                Toast.makeText(this, getString(R.string.editor_insert_item_successful),
                         Toast.LENGTH_SHORT).show();
             }
         } else {
@@ -323,11 +351,11 @@ public class EditorActivity extends AppCompatActivity implements
             // Show a toast message depending on whether or not the update was successful.
             if (rowsAffected == 0) {
                 // If no rows were affected, then there was an error with the update.
-                Toast.makeText(this, getString(R.string.editor_update_pet_failed),
+                Toast.makeText(this, getString(R.string.editor_update_item_failed),
                         Toast.LENGTH_SHORT).show();
             } else {
                 // Otherwise, the update was successful and we can display a toast.
-                Toast.makeText(this, getString(R.string.editor_update_pet_successful),
+                Toast.makeText(this, getString(R.string.editor_update_item_successful),
                         Toast.LENGTH_SHORT).show();
             }
         }
@@ -350,8 +378,10 @@ public class EditorActivity extends AppCompatActivity implements
         super.onPrepareOptionsMenu(menu);
         // If this is a new pet, hide the "Delete" menu item.
         if (mCurrentClothesUri == null) {
-            MenuItem menuItem = menu.findItem(R.id.action_delete);
-            menuItem.setVisible(false);
+            MenuItem deleteItem = menu.findItem(R.id.action_delete);
+            MenuItem restockItem = menu.findItem(R.id.action_restock);
+            deleteItem.setVisible(false);
+            restockItem.setVisible(false);
         }
         return true;
     }
@@ -371,6 +401,9 @@ public class EditorActivity extends AppCompatActivity implements
             case R.id.action_delete:
                 // Pop up confirmation dialog for deletion
                 showDeleteConfirmationDialog();
+                return true;
+            case R.id.action_restock:
+                showRestockConfirmationDialog();
                 return true;
             // Respond to a click on the "Up" arrow button in the app bar
             case android.R.id.home:
@@ -425,6 +458,7 @@ public class EditorActivity extends AppCompatActivity implements
         // Show dialog that there are unsaved changes
         showUnsavedChangesDialog(discardButtonClickListener);
     }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == PICK_PHOTO_REQUEST && resultCode == RESULT_OK) {
@@ -457,7 +491,7 @@ public class EditorActivity extends AppCompatActivity implements
                 ClothesEntry.COLUMN_CLOTHES_QUANTITY,
                 ClothesEntry.COLUMN_CLOTHES_SUPPLIER_NAME,
                 ClothesEntry.COLUMN_CLOTHES_SUPPLIER_EMAIL,
-                ClothesEntry.COLUMN_CLOTHES_IMAGE };
+                ClothesEntry.COLUMN_CLOTHES_IMAGE};
 
         // This loader will execute the ContentProvider's query method on a background thread
         return new CursorLoader(this,   // Parent activity context
@@ -469,7 +503,7 @@ public class EditorActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+    public void onLoadFinished(Loader<Cursor> loader, final Cursor cursor) {
         // Bail early if the cursor is null or there is less than 1 row in the cursor
         if (cursor == null || cursor.getCount() < 1) {
             return;
@@ -479,11 +513,11 @@ public class EditorActivity extends AppCompatActivity implements
         // (This should be the only row in the cursor)
         if (cursor.moveToFirst()) {
             // Find the columns of pet attributes that we're interested in
-            int idColumnIndex = cursor.getColumnIndex(ClothesEntry._ID);
+            final int idColumnIndex = cursor.getColumnIndex(ClothesEntry._ID);
             int nameColumnIndex = cursor.getColumnIndex(ClothesEntry.COLUMN_CLOTHES_NAME);
             int typeColumnIndex = cursor.getColumnIndex(ClothesEntry.COLUMN_CLOTHES_TYPE);
             int priceColumnIndex = cursor.getColumnIndex(ClothesEntry.COLUMN_CLOTHES_PRICE);
-            int quantityColumnIndex = cursor.getColumnIndex(ClothesEntry.COLUMN_CLOTHES_QUANTITY);
+            final int quantityColumnIndex = cursor.getColumnIndex(ClothesEntry.COLUMN_CLOTHES_QUANTITY);
             int supplierNameColumnIndex = cursor.getColumnIndex(ClothesEntry.COLUMN_CLOTHES_SUPPLIER_NAME);
             int supplierEmailColumnIndex = cursor.getColumnIndex(ClothesEntry.COLUMN_CLOTHES_SUPPLIER_EMAIL);
             int imageColumnIndex = cursor.getColumnIndex(ClothesEntry.COLUMN_CLOTHES_IMAGE);
@@ -495,17 +529,88 @@ public class EditorActivity extends AppCompatActivity implements
             int quantity = cursor.getInt(quantityColumnIndex);
             String supplierName = cursor.getString(supplierNameColumnIndex);
             String supplierEmail = cursor.getString(supplierEmailColumnIndex);
-            int image = cursor.getInt(imageColumnIndex);
 
             // Update the views on the screen with the values from the database
-            mItemImage.setImageResource(image);
+            Uri imageUri = Uri.parse(cursor.getString(imageColumnIndex));
+
+
+            // Update the TextViews with the attributes for the current pet
+            Glide.with(this).load(imageUri)
+                    .placeholder(R.drawable.pic)
+                    .error(R.drawable.pic)
+                    .crossFade()
+                    .centerCrop()
+                    .into(mItemImage);
             mNameEditText.setText(name);
             mPriceEditText.setText(Integer.toString(price));
             mQuantityEditText.setText(Integer.toString(quantity));
             mSupplierNameEditText.setText(supplierName);
             mSupplierEmailEditText.setText(supplierEmail);
 
+            final int position = cursor.getPosition();
+            mAddItem.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    cursor.moveToPosition(position);
+                    int oldQuantity = (cursor.getInt(quantityColumnIndex));
+                    if (oldQuantity >= 0) {
+                        mAddItem.setEnabled(true);
+                        oldQuantity++;
+                        if (oldQuantity >= 0) {
+                            int quantity = oldQuantity;
+                            ContentValues contentValues = new ContentValues();
+                            contentValues.put(ClothesEntry.COLUMN_CLOTHES_QUANTITY, quantity);
+                            String whereArg = ClothesEntry._ID + " =?";
+                            //Get the item id which should be updated
+                            int item_id = cursor.getInt(idColumnIndex);
+                            String itemIDArgs = Integer.toString(item_id);
+                            String[] selectionArgs = {itemIDArgs};
+                            int rowsAffected = view.getContext().getContentResolver().update(
+                                    ContentUris.withAppendedId(ClothesEntry.CONTENT_URI, item_id),
+                                    contentValues,
+                                    whereArg, selectionArgs);
+                            String newQu = cursor.getString(quantityColumnIndex);
+                            mQuantityEditText.setText(newQu);
+                        } else {
+                            mAddItem.setEnabled(false);
+                        }
 
+                    }
+
+                }
+            });
+
+            mSubtractItem.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    cursor.moveToPosition(position);
+                    int oldQuantity = (cursor.getInt(quantityColumnIndex));
+                    if (oldQuantity > 0) {
+                        mAddItem.setEnabled(true);
+                        oldQuantity--;
+                        if (oldQuantity >= 0) {
+                            int quantity = oldQuantity;
+                            ContentValues contentValues = new ContentValues();
+                            contentValues.put(ClothesEntry.COLUMN_CLOTHES_QUANTITY, quantity);
+                            String whereArg = ClothesEntry._ID + " =?";
+                            //Get the item id which should be updated
+                            int item_id = cursor.getInt(idColumnIndex);
+                            String itemIDArgs = Integer.toString(item_id);
+                            String[] selectionArgs = {itemIDArgs};
+                            int rowsAffected = view.getContext().getContentResolver().update(
+                                    ContentUris.withAppendedId(ClothesEntry.CONTENT_URI, item_id),
+                                    contentValues,
+                                    whereArg, selectionArgs);
+                            String newQu = cursor.getString(quantityColumnIndex);
+                            mQuantityEditText.setText(newQu);
+                        } else {
+                            mAddItem.setEnabled(false);
+                        }
+
+                    }
+
+                }
+            });
             // Gender is a dropdown spinner, so map the constant value from the database
             // into one of the dropdown options (0 is Unknown, 1 is Male, 2 is Female).
             // Then call setSelection() so that option is displayed on screen as the current selection.
@@ -608,11 +713,11 @@ public class EditorActivity extends AppCompatActivity implements
             // Show a toast message depending on whether or not the delete was successful.
             if (rowsDeleted == 0) {
                 // If no rows were deleted, then there was an error with the delete.
-                Toast.makeText(this, getString(R.string.editor_delete_pet_failed),
+                Toast.makeText(this, getString(R.string.editor_delete_item_failed),
                         Toast.LENGTH_SHORT).show();
             } else {
                 // Otherwise, the delete was successful and we can display a toast.
-                Toast.makeText(this, getString(R.string.editor_delete_pet_successful),
+                Toast.makeText(this, getString(R.string.editor_delete_item_successful),
                         Toast.LENGTH_SHORT).show();
             }
         }
@@ -620,4 +725,38 @@ public class EditorActivity extends AppCompatActivity implements
         // Close the activity
         finish();
     }
+
+    /**
+     * Prompt the user to confirm that they want to delete this pet.
+     */
+    private void showRestockConfirmationDialog(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(R.string.send_email_dialog);
+        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // User clicked the "Cancel" button, so dismiss the dialog
+                // and continue editing the pet.
+                if (dialog != null) {
+                    dialog.dismiss();
+                }
+            }
+        });
+        builder.setPositiveButton(R.string.send_email, new DialogInterface.OnClickListener() {
+        public void onClick(DialogInterface dialog, int id) {
+            saveItem();
+            // intent to email
+            Intent intent = new Intent(android.content.Intent.ACTION_SENDTO);
+            intent.setType("text/plain");
+            intent.setData(Uri.parse("mailto:" + mSupplierEmailEditText.getText().toString().trim()));
+            intent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Item sold out -- Need more");
+            String restockMessage = "The product has sold out, more are welcome. " +
+                    mNameEditText.getText().toString().trim() +
+                    "!!!";
+            intent.putExtra(android.content.Intent.EXTRA_TEXT, restockMessage);
+            startActivity(intent);
+        }
+    });
+    AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+}
 }

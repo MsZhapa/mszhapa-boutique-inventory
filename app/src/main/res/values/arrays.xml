@@ -17,9 +17,4 @@
         <item>@string/type_pants</item>
         <item>@string/type_top</item>
     </string-array>
-    <string-array name="array_supplier_options">
-        <item>@string/supplier_only</item>
-        <item>@string/supplier_zara</item>
-        <item>@string/supplier_monki</item>
-    </string-array>
 </resources>

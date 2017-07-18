@@ -23,7 +23,6 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="30dp">
 
-
         <ImageView
             android:id="@+id/display_image"
             android:layout_width="wrap_content"
@@ -44,14 +43,14 @@
         <TextView
             style="@style/CategoryStyle"
             android:layout_weight="1"
-            android:text="@string/category_overview" />
+            android:text="@string/category_name" />
 
         <!-- Name field -->
         <TextView
             android:id="@+id/display_name"
             style="@style/CategoryStyle"
             android:layout_weight="1"
-            android:hint="@string/hint_pet_name" />
+            android:hint="@string/hint_item_name" />
 
     </LinearLayout>
 

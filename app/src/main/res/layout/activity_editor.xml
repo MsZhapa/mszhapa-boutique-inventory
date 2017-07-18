@@ -56,7 +56,7 @@
         <!-- Label -->
         <TextView
             style="@style/CategoryStyle"
-            android:text="@string/category_overview" />
+            android:text="@string/category_name" />
 
         <!-- Input fields -->
         <LinearLayout
@@ -70,7 +70,7 @@
             <EditText
                 android:id="@+id/edit_clothes_name"
                 style="@style/EditorFieldStyle"
-                android:hint="@string/hint_pet_name"
+                android:hint="@string/hint_item_name"
                 android:inputType="textCapWords" />
 
         </LinearLayout>
@@ -129,6 +129,7 @@
                 android:id="@+id/edit_clothes_price"
                 style="@style/EditorFieldStyle"
                 android:hint="@string/hint_clothes_price"
+                android:maxEms="4"
                 android:inputType="number" />
 
             <!-- Units for weight (kg) -->
@@ -138,7 +139,6 @@
                 android:text="@string/unit_price" />
         </RelativeLayout>
     </LinearLayout>
-    <!-- Quantity category -->
     <LinearLayout
         android:id="@+id/container_quantity"
         android:layout_width="match_parent"
@@ -147,29 +147,46 @@
 
         <!-- Label -->
         <TextView
-            style="@style/CategoryStyle"
-            android:text="@string/category_quantity" />
+            android:text="@string/category_quantity"
+            android:layout_weight="1"
+            style="@style/CategoryStyle" />
 
         <!-- Input fields -->
-        <RelativeLayout
-            android:layout_width="0dp"
+        <LinearLayout
             android:layout_height="wrap_content"
-            android:layout_weight="2"
-            android:paddingLeft="4dp">
+            android:layout_width="0dp"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal"
+            android:layout_weight="2">
+
+            <Button
+                android:id="@+id/subtract_item"
+                android:drawableLeft="@drawable/minus"
+                android:drawablePadding="5dp"
+                android:layout_gravity="center_vertical"
+                android:layout_width="30dp"
+                android:layout_height="30dp"/>
 
             <!-- Weight field -->
             <EditText
-                android:id="@+id/edit_clothes_quantity"
-                style="@style/EditorFieldStyle"
+                android:id="@+id/edit_item_quantity"
                 android:hint="@string/hint_clothes_quantity"
-                android:inputType="number" />
+                android:inputType="number"
+                android:gravity="center_horizontal"
+                android:layout_marginLeft="7dp"
+                android:layout_marginRight="10dp"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
+                android:maxLength="4"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"/>
 
-            <!-- Units for weight (kg) -->
-            <TextView
-                android:id="@+id/label_quantity_units"
-                style="@style/EditorUnitsStyle"
-                android:text="@string/unit_quantity" />
-        </RelativeLayout>
+            <Button
+                android:id="@+id/add_item"
+                android:drawableLeft="@drawable/plus"
+                android:layout_gravity="center_vertical"
+                android:layout_width="30dp"
+                android:layout_height="30dp"/>
+        </LinearLayout>
     </LinearLayout>
 
     <!-- Supplier category -->

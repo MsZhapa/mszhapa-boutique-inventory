@@ -117,17 +117,13 @@ public class DetailActivity extends AppCompatActivity implements
         // creating a new pet.
         // If the intent DOES NOT contain a pet content URI, then we know that we are
         // creating a new pet.
-        if (mCurrentClothesUri == null) {
+        if (mCurrentClothesUri != null) {
             // This is a new pet, so change the app bar to say "Add a Pet"
-            setTitle(getString(R.string.editor_activity_title_new_pet));
+            setTitle(getString(R.string.item_detail));
 
             // Invalidate the options menu, so the "Delete" menu option can be hidden.
             // (It doesn't make sense to delete a pet that hasn't been created yet.)
             invalidateOptionsMenu();
-        } else {
-            // Otherwise this is an existing pet, so change app bar to say "Edit Pet"
-            setTitle(getString(R.string.editor_activity_title_edit_pet));
-
             // Initialize a loader to read the pet data from the database
             // and display the current values in the editor
             getLoaderManager().initLoader(EXISTING_CLOTHES_LOADER, null, this);
@@ -157,11 +153,10 @@ public class DetailActivity extends AppCompatActivity implements
         mEditItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent i = new Intent(view.getContext(), EditorActivity.class);
-
+                Intent intent = new Intent(DetailActivity.this, EditorActivity.class);
                 Uri currentClothesUri = ContentUris.withAppendedId(ClothesEntry.CONTENT_URI, id);
-                i.setData(currentClothesUri);
-                startActivity(i);
+                intent.setData(currentClothesUri);
+                startActivity(intent);
             }
         });
 
@@ -178,6 +173,7 @@ public class DetailActivity extends AppCompatActivity implements
             public void onClick(View view) {
 
                 mClothesHasChanged = true;
+                saveItem();
             }
         });
         mSubtractItem.setOnClickListener(new View.OnClickListener() {
@@ -185,6 +181,7 @@ public class DetailActivity extends AppCompatActivity implements
             public void onClick(View view) {
 
                 mClothesHasChanged = true;
+                saveItem();
             }
         });
         mContactSupplier.setOnClickListener(new View.OnClickListener() {
@@ -218,7 +215,7 @@ public class DetailActivity extends AppCompatActivity implements
                 TextUtils.isEmpty(quantityString)) {
             // Since no fields were modified, we can return early without creating a new pet.
             // No need to create ContentValues and no need to do any ContentProvider operations.
-            Toast.makeText(this, R.string.imposibru, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.editor_insert_item_failed, Toast.LENGTH_SHORT).show();
             // No change has been made so we can return
             return;
         }
@@ -243,11 +240,11 @@ public class DetailActivity extends AppCompatActivity implements
             // Show a toast message depending on whether or not the insertion was successful.
             if (newUri == null) {
                 // If the new content URI is null, then there was an error with insertion.
-                Toast.makeText(this, getString(R.string.editor_insert_pet_failed),
+                Toast.makeText(this, getString(R.string.editor_insert_item_failed),
                         Toast.LENGTH_SHORT).show();
             } else {
                 // Otherwise, the insertion was successful and we can display a toast.
-                Toast.makeText(this, getString(R.string.editor_insert_pet_successful),
+                Toast.makeText(this, getString(R.string.editor_insert_item_successful),
                         Toast.LENGTH_SHORT).show();
             }
         } else {
@@ -260,11 +257,11 @@ public class DetailActivity extends AppCompatActivity implements
             // Show a toast message depending on whether or not the update was successful.
             if (rowsAffected == 0) {
                 // If no rows were affected, then there was an error with the update.
-                Toast.makeText(this, getString(R.string.editor_update_pet_failed),
+                Toast.makeText(this, getString(R.string.editor_update_item_failed),
                         Toast.LENGTH_SHORT).show();
             } else {
                 // Otherwise, the update was successful and we can display a toast.
-                Toast.makeText(this, getString(R.string.editor_update_pet_successful),
+                Toast.makeText(this, getString(R.string.editor_update_item_successful),
                         Toast.LENGTH_SHORT).show();
             }
         }
@@ -436,9 +433,9 @@ public class DetailActivity extends AppCompatActivity implements
                 public void onClick(View view) {
                     cursor.moveToPosition(position);
                     int oldQuantity = (cursor.getInt(quantityColumnIndex));
-                    if (oldQuantity > 0) {
+                    if (oldQuantity >= 0) {
                         mAddItem.setEnabled(true);
-                        oldQuantity--;
+                        oldQuantity++;
                         if (oldQuantity >= 0) {
                             int quantity = oldQuantity;
                             ContentValues contentValues = new ContentValues();
@@ -470,7 +467,7 @@ public class DetailActivity extends AppCompatActivity implements
                     int oldQuantity = (cursor.getInt(quantityColumnIndex));
                     if (oldQuantity > 0) {
                         mAddItem.setEnabled(true);
-                        oldQuantity++;
+                        oldQuantity--;
                         if (oldQuantity >= 0) {
                             int quantity = oldQuantity;
                             ContentValues contentValues = new ContentValues();
@@ -578,11 +575,11 @@ public class DetailActivity extends AppCompatActivity implements
             // Show a toast message depending on whether or not the delete was successful.
             if (rowsDeleted == 0) {
                 // If no rows were deleted, then there was an error with the delete.
-                Toast.makeText(this, getString(R.string.editor_delete_pet_failed),
+                Toast.makeText(this, getString(R.string.editor_delete_item_failed),
                         Toast.LENGTH_SHORT).show();
             } else {
                 // Otherwise, the delete was successful and we can display a toast.
-                Toast.makeText(this, getString(R.string.editor_delete_pet_successful),
+                Toast.makeText(this, getString(R.string.editor_delete_item_successful),
                         Toast.LENGTH_SHORT).show();
             }
         }
