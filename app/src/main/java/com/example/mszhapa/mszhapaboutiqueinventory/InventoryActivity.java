@@ -97,7 +97,7 @@ public class InventoryActivity extends AppCompatActivity implements
         values.put(ClothesEntry.COLUMN_CLOTHES_IMAGE, "R.drawable.box");
 
         // Insert a new row for item into the provider using the ContentResolver.
-        // Use the {@link PetEntry#CONTENT_URI} to indicate that we want to insert
+        // Use the {@link ClothesEntry#CONTENT_URI} to indicate that we want to insert
         // into the clothes database table.
         // Receive the new content URI that will allow us to access the item's data in the future.
         Uri newUri = getContentResolver().insert(ClothesEntry.CONTENT_URI, values);
