@@ -2,6 +2,7 @@ package com.example.mszhapa.mszhapaboutiqueinventory;
 
 import android.app.AlertDialog;
 import android.app.LoaderManager;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.CursorLoader;
 import android.content.DialogInterface;
@@ -23,7 +24,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.example.mszhapa.mszhapaboutiqueinventory.data.ClothesContract.ClothesEntry;
+
+import static android.R.attr.id;
 
 /**
  * Created by MsZhapa on 17/07/2017.
@@ -32,24 +36,37 @@ import com.example.mszhapa.mszhapaboutiqueinventory.data.ClothesContract.Clothes
 public class DetailActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
-    /** Identifier for the pet data loader */
+    /**
+     * Identifier for the pet data loader
+     */
     private static final int EXISTING_CLOTHES_LOADER = 0;
 
-    private static final String TAG = EditorActivity.class.getSimpleName();;
+    private static final String TAG = EditorActivity.class.getSimpleName();
+    ;
 
-    /** Content URI for the existing pet (null if it's a new pet) */
+    /**
+     * Content URI for the existing pet (null if it's a new pet)
+     */
     private Uri mCurrentClothesUri;
 
-    /** EditText field to enter the pet's name */
+    /**
+     * EditText field to enter the pet's name
+     */
     private TextView mNameTextView;
 
-    /** EditText field to enter the pet's breed */
+    /**
+     * EditText field to enter the pet's breed
+     */
     private TextView mTypeTextView;
 
-    /** EditText field to enter the pet's name */
+    /**
+     * EditText field to enter the pet's name
+     */
     private TextView mPriceTextView;
 
-    /** EditText field to enter the pet's name */
+    /**
+     * EditText field to enter the pet's name
+     */
     private EditText mItemQuantityEditText;
 
     private Button mAddItem;
@@ -65,7 +82,13 @@ public class DetailActivity extends AppCompatActivity implements
 
     private TextView mSupplierEmailTextView;
 
-    /** Boolean flag that keeps track of whether the pet has been edited (true) or not (false) */
+    private Button mDeleteItem;
+
+    private Button mEditItem;
+
+    /**
+     * Boolean flag that keeps track of whether the pet has been edited (true) or not (false)
+     */
     private boolean mClothesHasChanged = false;
 
     /**
@@ -111,6 +134,7 @@ public class DetailActivity extends AppCompatActivity implements
         }
 
         // Find all relevant views that we will need to read user input from
+        mItemImage = (ImageView) findViewById(R.id.display_image);
         mNameTextView = (TextView) findViewById(R.id.display_name);
         mTypeTextView = (TextView) findViewById(R.id.display_type);
         mPriceTextView = (TextView) findViewById(R.id.display_price);
@@ -120,13 +144,34 @@ public class DetailActivity extends AppCompatActivity implements
         mAddItem = (Button) findViewById(R.id.add_item);
         mSubtractItem = (Button) findViewById(R.id.subtract_item);
         mContactSupplier = (Button) findViewById(R.id.contact_supplier);
-        mItemImage = (ImageView) findViewById(R.id.display_image);
+        mEditItem = (Button) findViewById(R.id.edit_item_button_detail);
+        mDeleteItem = (Button) findViewById(R.id.delete_item_button_detail);
+
 
         // Setup OnTouchListeners on all the input fields, so we can determine if the user
         // has touched or modified them. This will let us know if there are unsaved changes
         // or not, if the user tries to leave the editor without saving.
 
         mItemQuantityEditText.setOnTouchListener(mTouchListener);
+
+        mEditItem.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(view.getContext(), EditorActivity.class);
+
+                Uri currentClothesUri = ContentUris.withAppendedId(ClothesEntry.CONTENT_URI, id);
+                i.setData(currentClothesUri);
+                startActivity(i);
+            }
+        });
+
+        mDeleteItem.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(view.getContext(), InventoryActivity.class);
+                startActivity(i);
+            }
+        });
 
         mAddItem.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -165,7 +210,6 @@ public class DetailActivity extends AppCompatActivity implements
         // Use trim to eliminate leading or trailing white space
 
         String quantityString = mItemQuantityEditText.getText().toString().trim();
-
 
 
         // Check if this is supposed to be a new pet
@@ -331,7 +375,7 @@ public class DetailActivity extends AppCompatActivity implements
                 ClothesEntry.COLUMN_CLOTHES_QUANTITY,
                 ClothesEntry.COLUMN_CLOTHES_SUPPLIER_NAME,
                 ClothesEntry.COLUMN_CLOTHES_SUPPLIER_EMAIL,
-                ClothesEntry.COLUMN_CLOTHES_IMAGE };
+                ClothesEntry.COLUMN_CLOTHES_IMAGE};
 
         // This loader will execute the ContentProvider's query method on a background thread
         return new CursorLoader(this,   // Parent activity context
@@ -343,7 +387,7 @@ public class DetailActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+    public void onLoadFinished(Loader<Cursor> loader, final Cursor cursor) {
         // Bail early if the cursor is null or there is less than 1 row in the cursor
         if (cursor == null || cursor.getCount() < 1) {
             return;
@@ -353,11 +397,11 @@ public class DetailActivity extends AppCompatActivity implements
         // (This should be the only row in the cursor)
         if (cursor.moveToFirst()) {
             // Find the columns of pet attributes that we're interested in
-            int idColumnIndex = cursor.getColumnIndex(ClothesEntry._ID);
+            final int idColumnIndex = cursor.getColumnIndex(ClothesEntry._ID);
             int nameColumnIndex = cursor.getColumnIndex(ClothesEntry.COLUMN_CLOTHES_NAME);
             int typeColumnIndex = cursor.getColumnIndex(ClothesEntry.COLUMN_CLOTHES_TYPE);
             int priceColumnIndex = cursor.getColumnIndex(ClothesEntry.COLUMN_CLOTHES_PRICE);
-            int quantityColumnIndex = cursor.getColumnIndex(ClothesEntry.COLUMN_CLOTHES_QUANTITY);
+            final int quantityColumnIndex = cursor.getColumnIndex(ClothesEntry.COLUMN_CLOTHES_QUANTITY);
             int supplierNameColumnIndex = cursor.getColumnIndex(ClothesEntry.COLUMN_CLOTHES_SUPPLIER_NAME);
             int supplierEmailColumnIndex = cursor.getColumnIndex(ClothesEntry.COLUMN_CLOTHES_SUPPLIER_EMAIL);
             int imageColumnIndex = cursor.getColumnIndex(ClothesEntry.COLUMN_CLOTHES_IMAGE);
@@ -369,31 +413,96 @@ public class DetailActivity extends AppCompatActivity implements
             int quantity = cursor.getInt(quantityColumnIndex);
             String supplierName = cursor.getString(supplierNameColumnIndex);
             String supplierEmail = cursor.getString(supplierEmailColumnIndex);
-            int image = cursor.getInt(imageColumnIndex);
 
             // Update the views on the screen with the values from the database
+            Uri imageUri = Uri.parse(cursor.getString(imageColumnIndex));
+
+            Glide.with(this).load(imageUri)
+                    .placeholder(R.drawable.pic)
+                    .error(R.drawable.pic)
+                    .crossFade()
+                    .centerCrop()
+                    .into(mItemImage);
             mNameTextView.setText(name);
+            mTypeTextView.setText(Integer.toString(type));
             mPriceTextView.setText(Integer.toString(price));
             mItemQuantityEditText.setText(Integer.toString(quantity));
             mSupplierNameTextView.setText(supplierName);
             mSupplierEmailTextView.setText(supplierEmail);
-            mItemImage.setImageResource(image);
-            mTypeTextView.setText(type);
 
-            }
+            final int position = cursor.getPosition();
+            mAddItem.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    cursor.moveToPosition(position);
+                    int oldQuantity = (cursor.getInt(quantityColumnIndex));
+                    if (oldQuantity > 0) {
+                        mAddItem.setEnabled(true);
+                        oldQuantity--;
+                        if (oldQuantity >= 0) {
+                            int quantity = oldQuantity;
+                            ContentValues contentValues = new ContentValues();
+                            contentValues.put(ClothesEntry.COLUMN_CLOTHES_QUANTITY, quantity);
+                            String whereArg = ClothesEntry._ID + " =?";
+                            //Get the item id which should be updated
+                            int item_id = cursor.getInt(idColumnIndex);
+                            String itemIDArgs = Integer.toString(item_id);
+                            String[] selectionArgs = {itemIDArgs};
+                            int rowsAffected = view.getContext().getContentResolver().update(
+                                    ContentUris.withAppendedId(ClothesEntry.CONTENT_URI, item_id),
+                                    contentValues,
+                                    whereArg, selectionArgs);
+                            String newQu = cursor.getString(quantityColumnIndex);
+                            mItemQuantityEditText.setText(newQu);
+                        } else {
+                            mAddItem.setEnabled(false);
+                        }
+
+                    }
+
+                }
+            });
+
+            mSubtractItem.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    cursor.moveToPosition(position);
+                    int oldQuantity = (cursor.getInt(quantityColumnIndex));
+                    if (oldQuantity > 0) {
+                        mAddItem.setEnabled(true);
+                        oldQuantity++;
+                        if (oldQuantity >= 0) {
+                            int quantity = oldQuantity;
+                            ContentValues contentValues = new ContentValues();
+                            contentValues.put(ClothesEntry.COLUMN_CLOTHES_QUANTITY, quantity);
+                            String whereArg = ClothesEntry._ID + " =?";
+                            //Get the item id which should be updated
+                            int item_id = cursor.getInt(idColumnIndex);
+                            String itemIDArgs = Integer.toString(item_id);
+                            String[] selectionArgs = {itemIDArgs};
+                            int rowsAffected = view.getContext().getContentResolver().update(
+                                    ContentUris.withAppendedId(ClothesEntry.CONTENT_URI, item_id),
+                                    contentValues,
+                                    whereArg, selectionArgs);
+                            String newQu = cursor.getString(quantityColumnIndex);
+                            mItemQuantityEditText.setText(newQu);
+                        } else {
+                            mAddItem.setEnabled(false);
+                        }
+
+                    }
+
+                }
+            });
+
+        }
 
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         // If the loader is invalidated, clear out all the data from the input fields.
-        mNameTextView.setText("");
-        mTypeTextView.setText(""); // Select "Unknown" gender
-        mPriceTextView.setText("");
         mItemQuantityEditText.setText("");
-        mSupplierNameTextView.setText("");
-        mSupplierEmailTextView.setText("");
-        mItemImage.setImageResource(R.drawable.add);
 
     }
 

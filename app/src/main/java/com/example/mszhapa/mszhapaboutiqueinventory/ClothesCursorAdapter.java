@@ -87,15 +87,17 @@ public class ClothesCursorAdapter extends CursorAdapter {
 
 
         // Update the TextViews with the attributes for the current pet
-        nameTextView.setText(clothesName);
-        priceTextView.setText(Integer.toString(price));
-        quantityTextView.setText(Integer.toString(quantity));
         Glide.with(context).load(imageUri)
                 .placeholder(R.drawable.pic)
-                .error(R.drawable.add)
+                .error(R.drawable.pic)
                 .crossFade()
                 .centerCrop()
                 .into(itemImageView);
+        nameTextView.setText(clothesName);
+        priceTextView.setText(Integer.toString(price));
+        quantityTextView.setText(Integer.toString(quantity));
+
+
 
         final int position = cursor.getPosition();
         saleButton.setOnClickListener(new View.OnClickListener() {

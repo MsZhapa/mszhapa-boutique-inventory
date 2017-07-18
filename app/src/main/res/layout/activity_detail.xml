@@ -205,4 +205,30 @@
 
     </LinearLayout>
 
+    <LinearLayout
+        android:layout_margin="20dp"
+        android:layout_gravity="center_vertical"
+        android:layout_weight="4"
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_weight="1"
+            android:id="@+id/edit_item_button_detail"
+            android:text="@string/editor_activity_title_edit_item"
+            android:layout_gravity="center_vertical"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_weight="1"
+            android:id="@+id/delete_item_button_detail"
+            android:text="@string/delete"
+            android:layout_gravity="center_vertical"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
 </LinearLayout>

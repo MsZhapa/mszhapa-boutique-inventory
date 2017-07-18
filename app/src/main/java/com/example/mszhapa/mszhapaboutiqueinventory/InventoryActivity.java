@@ -68,7 +68,7 @@ public class InventoryActivity extends AppCompatActivity implements
         clothesListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                Intent intent = new Intent(InventoryActivity.this, EditorActivity.class);
+                Intent intent = new Intent(InventoryActivity.this, DetailActivity.class);
 
                 Uri currentClothesUri = ContentUris.withAppendedId(ClothesEntry.CONTENT_URI, id);
                 intent.setData(currentClothesUri);
@@ -94,6 +94,7 @@ public class InventoryActivity extends AppCompatActivity implements
         values.put(ClothesEntry.COLUMN_CLOTHES_QUANTITY, 8);
         values.put(ClothesEntry.COLUMN_CLOTHES_SUPPLIER_NAME, "ALEXA");
         values.put(ClothesEntry.COLUMN_CLOTHES_SUPPLIER_EMAIL, "ana@fg.cim");
+        values.put(ClothesEntry.COLUMN_CLOTHES_IMAGE, "R.drawable.welcome");
 
 
         // Insert a new row for Toto into the provider using the ContentResolver.

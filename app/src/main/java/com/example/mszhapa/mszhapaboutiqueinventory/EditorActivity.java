@@ -66,7 +66,7 @@ public class EditorActivity extends AppCompatActivity implements
 
     private ImageButton mImageBtn;
 
-    private String mCurrentPhotoUri = "no images";
+    private String mCurrentPhotoUri = "R.drawable.welcome";
 
     private ImageView mItemImage;
 
@@ -437,6 +437,7 @@ public class EditorActivity extends AppCompatActivity implements
                 //We use Glide to import photo images
                 Glide.with(this).load(mProductPhotoUri)
                         .placeholder(R.drawable.pic)
+                        .error(R.drawable.pic)
                         .crossFade()
                         .fitCenter()
                         .into(mItemImage);
@@ -497,12 +498,13 @@ public class EditorActivity extends AppCompatActivity implements
             int image = cursor.getInt(imageColumnIndex);
 
             // Update the views on the screen with the values from the database
+            mItemImage.setImageResource(image);
             mNameEditText.setText(name);
             mPriceEditText.setText(Integer.toString(price));
             mQuantityEditText.setText(Integer.toString(quantity));
             mSupplierNameEditText.setText(supplierName);
             mSupplierEmailEditText.setText(supplierEmail);
-            mItemImage.setImageResource(image);
+
 
             // Gender is a dropdown spinner, so map the constant value from the database
             // into one of the dropdown options (0 is Unknown, 1 is Male, 2 is Female).
