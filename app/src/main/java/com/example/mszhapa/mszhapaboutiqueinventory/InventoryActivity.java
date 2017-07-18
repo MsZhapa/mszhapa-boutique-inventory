@@ -28,7 +28,7 @@ public class InventoryActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
     /**
-     * Identifier for the pet data loader
+     * Identifier for the clothes data loader
      */
     private static final int CLOTHES_LOADER = 0;
 
@@ -52,15 +52,15 @@ public class InventoryActivity extends AppCompatActivity implements
             }
         });
 
-        // Find the ListView which will be populated with the pet data
+        // Find the ListView which will be populated with the clothes data
         ListView clothesListView = (ListView) findViewById(R.id.list);
 
         // Find and set empty view on the ListView, so that it only shows when the list has 0 items.
         View emptyView = findViewById(R.id.empty_view);
         clothesListView.setEmptyView(emptyView);
 
-        // Setup an Adapter to create a list item for each row of pet data in the Cursor.
-        // There is no pet data yet (until the loader finishes) so pass in null for the Cursor.
+        // Setup an Adapter to create a list item for each row of clothes data in the Cursor.
+        // There is no clothes data yet (until the loader finishes) so pass in null for the Cursor.
         mCursorAdapter = new ClothesCursorAdapter(this, null);
         clothesListView.setAdapter(mCursorAdapter);
 
@@ -68,7 +68,7 @@ public class InventoryActivity extends AppCompatActivity implements
         clothesListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                Intent intent = new Intent(InventoryActivity.this, DetailActivity.class);
+                Intent intent = new Intent(InventoryActivity.this, EditorActivity.class);
 
                 Uri currentClothesUri = ContentUris.withAppendedId(ClothesEntry.CONTENT_URI, id);
                 intent.setData(currentClothesUri);
@@ -82,30 +82,29 @@ public class InventoryActivity extends AppCompatActivity implements
     }
 
     /**
-     * Helper method to insert hardcoded pet data into the database. For debugging purposes only.
+     * Helper method to insert hardcoded item data into the database. For debugging purposes only.
      */
     private void insertItem() {
         // Create a ContentValues object where column names are the keys,
-        // and Toto's pet attributes are the values.
+        // and the item's attributes are the values.
         ContentValues values = new ContentValues();
         values.put(ClothesEntry.COLUMN_CLOTHES_NAME, "H&M garment");
         values.put(ClothesEntry.COLUMN_CLOTHES_TYPE, ClothesEntry.TYPE_OTHER);
         values.put(ClothesEntry.COLUMN_CLOTHES_PRICE, 7);
         values.put(ClothesEntry.COLUMN_CLOTHES_QUANTITY, 8);
-        values.put(ClothesEntry.COLUMN_CLOTHES_SUPPLIER_NAME, "ALEXA");
-        values.put(ClothesEntry.COLUMN_CLOTHES_SUPPLIER_EMAIL, "ana@fg.cim");
-        values.put(ClothesEntry.COLUMN_CLOTHES_IMAGE, "R.drawable.welcome");
+        values.put(ClothesEntry.COLUMN_CLOTHES_SUPPLIER_NAME, "MsSomeone");
+        values.put(ClothesEntry.COLUMN_CLOTHES_SUPPLIER_EMAIL, "ana@fg.com");
+        values.put(ClothesEntry.COLUMN_CLOTHES_IMAGE, "R.drawable.box");
 
-
-        // Insert a new row for Toto into the provider using the ContentResolver.
+        // Insert a new row for item into the provider using the ContentResolver.
         // Use the {@link PetEntry#CONTENT_URI} to indicate that we want to insert
-        // into the pets database table.
-        // Receive the new content URI that will allow us to access Toto's data in the future.
+        // into the clothes database table.
+        // Receive the new content URI that will allow us to access the item's data in the future.
         Uri newUri = getContentResolver().insert(ClothesEntry.CONTENT_URI, values);
     }
 
     /**
-     * Helper method to delete all pets in the database.
+     * Helper method to delete all clothes in the database.
      */
     private void deleteAllClothes() {
         int rowsDeleted = getContentResolver().delete(ClothesEntry.CONTENT_URI, null, null);
@@ -114,7 +113,7 @@ public class InventoryActivity extends AppCompatActivity implements
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu options from the res/menu/menu_catalog.xml file.
+        // Inflate the menu options from the res/menu/menu_main.xml file.
         // This adds menu items to the app bar.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
@@ -157,7 +156,7 @@ public class InventoryActivity extends AppCompatActivity implements
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        // Update {@link PetCursorAdapter} with this new cursor containing updated pet data
+        // Update {@link ClothesCursorAdapter} with this new cursor containing updated clothes data
         mCursorAdapter.swapCursor(data);
     }
 

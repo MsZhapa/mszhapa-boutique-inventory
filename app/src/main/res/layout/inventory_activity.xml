@@ -8,6 +8,7 @@
         android:padding="10dp"
         tools:context=".InventoryActivity">
 
+    <!-- List of clothes -->
     <ListView
         android:id="@+id/list"
         android:layout_width="match_parent"
@@ -20,13 +21,15 @@
         android:layout_height="wrap_content"
         android:layout_centerInParent="true">
 
+        <!-- Empty storage ImageView -->
         <ImageView
             android:id="@+id/empty_shelter_image"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:src="@drawable/empty"/>
+            android:src="@drawable/box"/>
 
+        <!-- TextView for title when empty view -->
         <TextView
             android:id="@+id/empty_title_text"
             android:layout_width="wrap_content"
@@ -38,6 +41,7 @@
             android:text="@string/empty_view_title_text"
             android:textAppearance="?android:textAppearanceMedium"/>
 
+        <!-- TextView for subtitle when empty view -->
         <TextView
             android:id="@+id/empty_subtitle_text"
             android:layout_width="wrap_content"
@@ -51,14 +55,14 @@
             android:textColor="#83888c"/>
     </RelativeLayout>
 
+    <!-- Button for adding a new item -->
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="#83888c"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:layout_margin="@dimen/fab_margin"
-        android:src="@drawable/group" />
+        android:src="@drawable/add_item" />
 
   </RelativeLayout>

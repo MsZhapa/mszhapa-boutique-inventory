@@ -17,13 +17,19 @@ import com.example.mszhapa.mszhapaboutiqueinventory.data.ClothesContract.Clothes
 
 public class ClothesProvider extends ContentProvider {
 
-    /** Tag for the log messages */
+    /**
+     * Tag for the log messages
+     */
     public static final String LOG_TAG = ClothesProvider.class.getSimpleName();
 
-    /** URI matcher code for the content URI for the pets table */
+    /**
+     * URI matcher code for the content URI for the clothes table
+     */
     private static final int CLOTHES = 100;
 
-    /** URI matcher code for the content URI for a single pet in the pets table */
+    /**
+     * URI matcher code for the content URI for a single item in the clothes table
+     */
     private static final int CLOTHES_ID = 101;
 
     /**
@@ -39,22 +45,20 @@ public class ClothesProvider extends ContentProvider {
         // should recognize. All paths added to the UriMatcher have a corresponding code to return
         // when a match is found.
 
-        // The content URI of the form "content://com.example.android.pets/pets" will map to the
-        // integer code {@link #CLOTHES}. This URI is used to provide access to MULTIPLE rows
-        // of the pets table.
+        // The content URI  will map to the integer code {@link #CLOTHES}. This URI is used to provide access to MULTIPLE rows
+        // of the clothes table.
         sUriMatcher.addURI(ClothesContract.CONTENT_AUTHORITY, ClothesContract.PATH_CLOTHES, CLOTHES);
 
-        // The content URI of the form "content://com.example.android.pets/pets/#" will map to the
-        // integer code {@link #CLOTHES_ID}. This URI is used to provide access to ONE single row
-        // of the pets table.
+        // The content URI will map to the integer code {@link #CLOTHES_ID}. This URI is used to provide access to ONE single row
+        // of the clothes table.
         //
         // In this case, the "#" wildcard is used where "#" can be substituted for an integer.
-        // For example, "content://com.example.android.pets/pets/3" matches, but
-        // "content://com.example.android.pets/pets" (without a number at the end) doesn't match.
         sUriMatcher.addURI(ClothesContract.CONTENT_AUTHORITY, ClothesContract.PATH_CLOTHES + "/#", CLOTHES_ID);
     }
 
-    /** Database helper object */
+    /**
+     * Database helper object
+     */
     private ClothesDbHelper mDbHelper;
 
     @Override
@@ -76,7 +80,7 @@ public class ClothesProvider extends ContentProvider {
         int match = sUriMatcher.match(uri);
         switch (match) {
             case CLOTHES:
-                // For the CLOTHES code, query the pets table directly with the given
+                // For the CLOTHES code, query the clothes table directly with the given
                 // projection, selection, selection arguments, and sort order. The cursor
                 // could contain multiple rows of the pets table.
                 cursor = database.query(ClothesEntry.TABLE_NAME, projection, selection, selectionArgs,
@@ -84,17 +88,14 @@ public class ClothesProvider extends ContentProvider {
                 break;
             case CLOTHES_ID:
                 // For the CLOTHES_ID code, extract out the ID from the URI.
-                // For an example URI such as "content://com.example.android.pets/pets/3",
-                // the selection will be "_id=?" and the selection argument will be a
-                // String array containing the actual ID of 3 in this case.
                 //
                 // For every "?" in the selection, we need to have an element in the selection
                 // arguments that will fill in the "?". Since we have 1 question mark in the
                 // selection, we have 1 String in the selection arguments' String array.
                 selection = ClothesEntry._ID + "=?";
-                selectionArgs = new String[] { String.valueOf(ContentUris.parseId(uri)) };
+                selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
 
-                // This will perform a query on the pets table where the _id equals 3 to return a
+                // This will perform a query on the clothes table where the _id equals 3 to return a
                 // Cursor containing that row of the table.
                 cursor = database.query(ClothesEntry.TABLE_NAME, projection, selection, selectionArgs,
                         null, null, sortOrder);
@@ -124,7 +125,7 @@ public class ClothesProvider extends ContentProvider {
     }
 
     /**
-     * Insert a pet into the database with the given content values. Return the new content URI
+     * Insert an item into the database with the given content values. Return the new content URI
      * for that specific row in the database.
      */
     private Uri insertItem(Uri uri, ContentValues values) {
@@ -134,30 +135,46 @@ public class ClothesProvider extends ContentProvider {
             throw new IllegalArgumentException("The piece of clothing requires a name");
         }
 
-        // Check that the gender is valid
+        // Check that the type is valid
         Integer type = values.getAsInteger(ClothesEntry.COLUMN_CLOTHES_TYPE);
         if (type == null || !ClothesEntry.isValidType(type)) {
             throw new IllegalArgumentException("The piece of clothing requires valid type");
         }
 
-        // If the weight is provided, check that it's greater than or equal to 0 kg
-       // Integer supplier = values.getAsInteger(ClothesEntry.COLUMN_CLOTHES_SUPPLIER);
-       // if (supplier == null || !ClothesEntry.isValidSupplier(type)) {
-       //     throw new IllegalArgumentException("The piece of clothing requires valid supplier");
-       // }
+        // Check that the price is valid and that it's greater than 0
+        Integer price = values.getAsInteger(ClothesEntry.COLUMN_CLOTHES_PRICE);
+        if (price != null && price < 0) {
+            throw new IllegalArgumentException("The piece of clothing requires valid price");
+        }
 
-        // If the weight is provided, check that it's greater than or equal to 0 kg
+        // Check that the quantity is valid and that it's greater or equal to 0
         Integer quantity = values.getAsInteger(ClothesEntry.COLUMN_CLOTHES_QUANTITY);
-        if (quantity != null && quantity < 0) {
+        if (quantity != null && quantity <= 0) {
             throw new IllegalArgumentException("The piece of clothing requires valid quantity");
         }
 
-        // No need to check the breed, any value is valid (including null).
+        // Check that the supplier name is valid
+         String supplierName = values.getAsString(ClothesEntry.COLUMN_CLOTHES_SUPPLIER_NAME);
+         if (supplierName == null) {
+          throw new IllegalArgumentException("The piece of clothing requires valid supplier name");
+         }
+
+        // Check that the supplier email is valid
+        String supplierEmail = values.getAsString(ClothesEntry.COLUMN_CLOTHES_SUPPLIER_EMAIL);
+        if (supplierEmail == null) {
+            throw new IllegalArgumentException("The piece of clothing requires valid supplier contact information");
+        }
+
+        // Check that the image is valid
+        String image = values.getAsString(ClothesEntry.COLUMN_CLOTHES_IMAGE);
+        if (image == null) {
+            throw new IllegalArgumentException("The piece of clothing requires valid image");
+        }
 
         // Get writeable database
         SQLiteDatabase database = mDbHelper.getWritableDatabase();
 
-        // Insert the new pet with the given values
+        // Insert the new item with the given values
         long id = database.insert(ClothesEntry.TABLE_NAME, null, values);
         // If the ID is -1, then the insertion failed. Log an error and return null.
         if (id == -1) {
@@ -165,7 +182,7 @@ public class ClothesProvider extends ContentProvider {
             return null;
         }
 
-        // Notify all listeners that the data has changed for the pet content URI
+        // Notify all listeners that the data has changed for the clothes content URI
         getContext().getContentResolver().notifyChange(uri, null);
 
         // Return the new URI with the ID (of the newly inserted row) appended at the end
@@ -184,7 +201,7 @@ public class ClothesProvider extends ContentProvider {
                 // so we know which row to update. Selection will be "_id=?" and selection
                 // arguments will be a String array containing the actual ID.
                 selection = ClothesEntry._ID + "=?";
-                selectionArgs = new String[] { String.valueOf(ContentUris.parseId(uri)) };
+                selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
                 return updateItem(uri, contentValues, selection, selectionArgs);
             default:
                 throw new IllegalArgumentException("Update is not supported for " + uri);
@@ -192,12 +209,12 @@ public class ClothesProvider extends ContentProvider {
     }
 
     /**
-     * Update pets in the database with the given content values. Apply the changes to the rows
-     * specified in the selection and selection arguments (which could be 0 or 1 or more pets).
+     * Update clothes in the database with the given content values. Apply the changes to the rows
+     * specified in the selection and selection arguments (which could be 0 or 1 or more clothes).
      * Return the number of rows that were successfully updated.
      */
     private int updateItem(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
-        // If the {@link PetEntry#COLUMN_PET_NAME} key is present,
+        // If the {@link ClothesEntry#COLUMN_CLOTHES_NAME} key is present,
         // check that the name value is not null.
         if (values.containsKey(ClothesEntry.COLUMN_CLOTHES_NAME)) {
             String name = values.getAsString(ClothesEntry.COLUMN_CLOTHES_NAME);
@@ -207,7 +224,7 @@ public class ClothesProvider extends ContentProvider {
         }
 
         // If the {@link PetEntry#COLUMN_PET_GENDER} key is present,
-        // check that the gender value is valid.
+        // check that the attributes values are valid.
         if (values.containsKey(ClothesEntry.COLUMN_CLOTHES_TYPE)) {
             Integer type = values.getAsInteger(ClothesEntry.COLUMN_CLOTHES_TYPE);
             if (type == null || !ClothesEntry.isValidType(type)) {
@@ -215,7 +232,6 @@ public class ClothesProvider extends ContentProvider {
             }
         }
         if (values.containsKey(ClothesEntry.COLUMN_CLOTHES_PRICE)) {
-            // Check that the weight is greater than or equal to 0 kg
             Integer price = values.getAsInteger(ClothesEntry.COLUMN_CLOTHES_PRICE);
             if (price != null && price < 0) {
                 throw new IllegalArgumentException("The piece of clothing requires valid price");
@@ -223,7 +239,6 @@ public class ClothesProvider extends ContentProvider {
         }
 
         if (values.containsKey(ClothesEntry.COLUMN_CLOTHES_QUANTITY)) {
-            // Check that the weight is greater than or equal to 0 kg
             Integer quantity = values.getAsInteger(ClothesEntry.COLUMN_CLOTHES_QUANTITY);
             if (quantity != null && quantity < 0) {
                 throw new IllegalArgumentException("The piece of clothing requires valid quantity");
@@ -241,9 +256,12 @@ public class ClothesProvider extends ContentProvider {
                 throw new IllegalArgumentException("The piece of clothing requires a supplier email");
             }
         }
-
-
-        // No need to check the breed, any value is valid (including null).
+        if (values.containsKey(ClothesEntry.COLUMN_CLOTHES_IMAGE)) {
+            String image = values.getAsString(ClothesEntry.COLUMN_CLOTHES_IMAGE);
+            if (image == null) {
+                throw new IllegalArgumentException("The piece of clothing requires a image");
+            }
+        }
 
         // If there are no values to update, then don't try to update the database
         if (values.size() == 0) {
@@ -283,7 +301,7 @@ public class ClothesProvider extends ContentProvider {
             case CLOTHES_ID:
                 // Delete a single row given by the ID in the URI
                 selection = ClothesEntry._ID + "=?";
-                selectionArgs = new String[] { String.valueOf(ContentUris.parseId(uri)) };
+                selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
                 rowsDeleted = database.delete(ClothesEntry.TABLE_NAME, selection, selectionArgs);
                 break;
             default:

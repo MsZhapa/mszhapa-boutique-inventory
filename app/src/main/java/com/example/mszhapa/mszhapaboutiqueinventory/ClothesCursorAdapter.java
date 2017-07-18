@@ -48,8 +48,8 @@ public class ClothesCursorAdapter extends CursorAdapter {
     }
 
     /**
-     * This method binds the pet data (in the current row pointed to by cursor) to the given
-     * list item layout. For example, the name for the current pet can be set on the name TextView
+     * This method binds the clothes data (in the current row pointed to by cursor) to the given
+     * list item layout. For example, the name for the current item can be set on the name TextView
      * in the list item layout.
      *
      * @param view    Existing view, returned earlier by newView() method
@@ -66,7 +66,7 @@ public class ClothesCursorAdapter extends CursorAdapter {
         ImageView itemImageView = (ImageView) view.findViewById(R.id.item_thumbnail);
         final Button saleButton = (Button) view.findViewById(R.id.sale_button);
 
-        // Find the columns of pet attributes that we're interested in
+        // Find the columns of the clothes' attributes that we're interested in
         final int columnID = cursor.getColumnIndex(ClothesEntry._ID);
         int nameColumnIndex = cursor.getColumnIndex(ClothesEntry.COLUMN_CLOTHES_NAME);
         int priceColumnIndex = cursor.getColumnIndex(ClothesEntry.COLUMN_CLOTHES_PRICE);
@@ -74,7 +74,7 @@ public class ClothesCursorAdapter extends CursorAdapter {
         int imageColumnIndex = cursor.getColumnIndex(ClothesEntry.COLUMN_CLOTHES_IMAGE);
 
 
-        // Read the pet attributes from the Cursor for the current pet
+        // Read the attributes from the Cursor for the current item
         String clothesName = cursor.getString(nameColumnIndex);
         int price = cursor.getInt(priceColumnIndex);
         int quantity = cursor.getInt(quantityColumnIndex);
@@ -82,11 +82,9 @@ public class ClothesCursorAdapter extends CursorAdapter {
             saleButton.setEnabled(false);
         }
 
-
         Uri imageUri = Uri.parse(cursor.getString(imageColumnIndex));
 
-
-        // Update the TextViews with the attributes for the current pet
+        // Update the TextViews with the attributes for the current item
         Glide.with(context).load(imageUri)
                 .placeholder(R.drawable.pic)
                 .error(R.drawable.pic)
@@ -97,8 +95,7 @@ public class ClothesCursorAdapter extends CursorAdapter {
         priceTextView.setText(Integer.toString(price));
         quantityTextView.setText(Integer.toString(quantity));
 
-
-
+        //subtract quantity button (sale button)
         final int position = cursor.getPosition();
         saleButton.setOnClickListener(new View.OnClickListener() {
             @Override
