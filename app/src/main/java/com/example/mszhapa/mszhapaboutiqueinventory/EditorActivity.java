@@ -549,7 +549,7 @@ public class EditorActivity extends AppCompatActivity implements
 
             Glide.with(this).load(imageUri)
                     .placeholder(R.drawable.pic)
-                    .error(R.drawable.add)
+                    .error(R.drawable.box)
                     .crossFade()
                     .centerCrop()
                     .into(mItemImage);
