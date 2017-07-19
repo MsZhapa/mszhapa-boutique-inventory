@@ -41,12 +41,12 @@ public class ClothesDbHelper extends SQLiteOpenHelper {
         // Create a String that contains the SQL statement to create the pets table
         String SQL_CREATE_CLOTHES_TABLE = "CREATE TABLE " + ClothesEntry.TABLE_NAME + " ("
                 + ClothesEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-                + ClothesEntry.COLUMN_CLOTHES_NAME + " TEXT, "
-                + ClothesEntry.COLUMN_CLOTHES_TYPE + " TEXT, "
+                + ClothesEntry.COLUMN_CLOTHES_NAME + " TEXT NOT NULL,"
+                + ClothesEntry.COLUMN_CLOTHES_TYPE + " TEXT NOT NULL,"
                 + ClothesEntry.COLUMN_CLOTHES_PRICE + " INTEGER NOT NULL, "
                 + ClothesEntry.COLUMN_CLOTHES_QUANTITY + " INTEGER NOT NULL DEFAULT 0, "
-                + ClothesEntry.COLUMN_CLOTHES_SUPPLIER_NAME + " TEXT, "
-                + ClothesEntry.COLUMN_CLOTHES_SUPPLIER_EMAIL + " TEXT, "
+                + ClothesEntry.COLUMN_CLOTHES_SUPPLIER_NAME + " TEXT NOT NULL, "
+                + ClothesEntry.COLUMN_CLOTHES_SUPPLIER_EMAIL + " TEXT NOT NULL, "
                 + ClothesEntry.COLUMN_CLOTHES_IMAGE + " TEXT NOT NULL DEFAULT 'no images' );";
 
         // Execute the SQL statement

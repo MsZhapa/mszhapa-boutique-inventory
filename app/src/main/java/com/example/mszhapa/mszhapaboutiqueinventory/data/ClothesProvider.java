@@ -149,7 +149,7 @@ public class ClothesProvider extends ContentProvider {
 
         // Check that the quantity is valid and that it's greater or equal to 0
         Integer quantity = values.getAsInteger(ClothesEntry.COLUMN_CLOTHES_QUANTITY);
-        if (quantity != null && quantity <= 0) {
+        if (quantity != null && quantity < 0) {
             throw new IllegalArgumentException("The piece of clothing requires valid quantity");
         }
 
