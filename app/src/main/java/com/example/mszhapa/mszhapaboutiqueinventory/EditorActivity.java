@@ -306,15 +306,16 @@ public class EditorActivity extends AppCompatActivity implements
         String supplierEmailString = mSupplierEmailEditText.getText().toString().trim();
 
         // Check if this is supposed to be a new item
-        // and check if all the fields in the editor are blank
-        if (mCurrentClothesUri == null ||
-                TextUtils.isEmpty(nameString) || TextUtils.isEmpty(priceString) ||
-                TextUtils.isEmpty(quantityString)  || TextUtils.isEmpty(supplierNameString) || TextUtils.isEmpty(supplierEmailString)) {
-            // Since no fields were modified, we can return early without creating a new item.
-            // No need to create ContentValues and no need to do any ContentProvider operations.
-            Toast.makeText(this, R.string.editor_insert_item_failed, Toast.LENGTH_SHORT).show();
-            // No change has been made so we can return
-            return;
+        // and check if any the fields in the editor are blank
+        if (mCurrentClothesUri == null) {
+            if (TextUtils.isEmpty(nameString) || TextUtils.isEmpty(priceString)  ||
+                    TextUtils.isEmpty(quantityString)  || TextUtils.isEmpty(supplierNameString) || TextUtils.isEmpty(supplierEmailString)) {
+                // Since no fields were modified, we can return early without creating a new item.
+                // No need to create ContentValues and no need to do any ContentProvider operations.
+                Toast.makeText(this, R.string.editor_insert_item_failed, Toast.LENGTH_SHORT).show();
+                // No change has been made so we can return
+                return;
+            }
         }
 
         // Create a ContentValues object where column names are the keys,
